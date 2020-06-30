@@ -76,7 +76,7 @@ class OnboardingLocationPermissionFragment :
                         .setTitle(R.string.android_button_permission_location)
                         .setMessage(R.string.android_foreground_service_notification_error_location_permission)
                         .setPositiveButton(getString(R.string.android_button_ok)
-                        ) { dialogInterface: DialogInterface, i: Int ->
+                        ) { dialogInterface: DialogInterface, _: Int ->
                             DeviceFeatureHelper.openApplicationSettings(requireActivity())
                             dialogInterface.dismiss()
                         }

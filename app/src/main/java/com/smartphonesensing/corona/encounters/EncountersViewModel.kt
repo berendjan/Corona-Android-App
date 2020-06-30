@@ -27,7 +27,6 @@ class EncountersViewModel : ViewModel() {
     var scanDuration: Long = 0
 
     fun updateEncountersList(handshakes: List<Handshake>) {
-        val stringBuilder: StringBuilder = StringBuilder()
 
         _encountersList.value = mergeHandshakes(handshakes)
 
