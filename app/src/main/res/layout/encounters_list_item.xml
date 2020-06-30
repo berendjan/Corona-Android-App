@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<layout>
+
+    <data>
+        <variable
+            name="encounterItem"
+            type="com.smartphonesensing.corona.encounters.EncounterItem"/>
+
+        <variable
+            name="clickListener"
+            type="com.smartphonesensing.corona.encounters.EncounterListener"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:onClick="@{() -> clickListener.onClick(encounterItem)}">
+
+        <ImageView
+            android:id="@+id/encounters_list_item_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_handshakes"
+            android:tint="@color/status_purple"
+            android:layout_marginStart="@dimen/marging_status_error"/>
+
+        <ImageView
+            android:id="@+id/encounters_list_item_chevron"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_chevron_right"
+            android:tint="@color/status_purple"
+            android:layout_marginTop="@dimen/marging_status_error"
+            android:layout_marginEnd="@dimen/marging_status_error"/>
+
+        <TextView
+            android:id="@+id/encounters_list_item_identifier"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/encounters_list_item_image"
+            app:layout_constraintEnd_toStartOf="@id/encounters_list_item_chevron"
+            style="@style/CoronaAppTheme.Text"
+            android:text="@{encounterItem.identifier}"
+            android:layout_marginEnd="@dimen/marging_status_error"
+            android:layout_marginStart="@dimen/marging_status_error"
+            android:layout_marginTop="@dimen/marging_status_error"/>
+
+        <TextView
+            android:id="@+id/encounters_list_item_start"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/encounters_list_item_identifier"
+            app:layout_constraintStart_toEndOf="@id/encounters_list_item_image"
+            app:layout_constraintEnd_toStartOf="@id/encounters_list_item_end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            style="@style/CoronaAppTheme.Text"
+            android:text="@{encounterItem.dateTimeStart}"
+            android:layout_marginEnd="@dimen/marging_status_error"
+            android:layout_marginStart="@dimen/marging_status_error"
+            android:layout_marginTop="@dimen/marging_status_error"
+            android:layout_marginBottom="@dimen/marging_status_error"/>
+
+        <TextView
+            android:id="@+id/encounters_list_item_end"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/encounters_list_item_identifier"
+            app:layout_constraintStart_toEndOf="@id/encounters_list_item_start"
+            app:layout_constraintEnd_toEndOf="@id/encounters_list_item_identifier"
+            style="@style/CoronaAppTheme.Text"
+            android:text="@{encounterItem.dateTimeEnd}"
+            android:layout_marginStart="@dimen/marging_status_error"
+            android:layout_marginTop="@dimen/marging_status_error"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

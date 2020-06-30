@@ -1,0 +1,6 @@
+include ':tracker'
+include ':ipv8-jvm'
+include ':ipv8-android'
+include ':ipv8'
+include ':app'
+rootProject.name = "Corona"

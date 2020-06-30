@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_home" >
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.smartphonesensing.corona.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/home_fragment" />
+
+    <fragment
+        android:id="@+id/navigation_encounters"
+        android:name="com.smartphonesensing.corona.encounters.EncountersFragment"
+        android:label="@string/title_encounters"
+        tools:layout="@layout/encounters_fragment" >
+        <action
+            android:id="@+id/action_navigation_encounters_to_encounterDetailsFragment"
+            app:destination="@id/encounterDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_reports"
+        android:name="com.smartphonesensing.corona.reports.ReportsFragment"
+        android:label="@string/title_reports"
+        tools:layout="@layout/reports_fragment" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.smartphonesensing.corona.settings.MySettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@xml/preferences" />
+
+    <fragment
+        android:id="@+id/navigation_trustchain"
+        android:name="com.smartphonesensing.corona.trustchain.TrustchainFragment"
+        android:label="@string/title_trustchain"
+        tools:layout="@layout/trustchain_fragment" />
+    <fragment
+        android:id="@+id/encounterDetailsFragment"
+        android:name="com.smartphonesensing.corona.encounters.EncounterDetailsFragment"
+        android:label="fragment_encounter_details"
+        tools:layout="@layout/encounter_details_fragment" >
+        <argument
+            android:name="encounter"
+            app:argType="com.smartphonesensing.corona.encounters.EncounterItem"/>
+    </fragment>
+
+</navigation>
