@@ -11,8 +11,10 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.smartphonesensing.corona.onboarding.OnboardingActivity
 import com.smartphonesensing.corona.storage.SecureStorage
-import com.smartphonesensing.corona.trustchain.CoronaCommunity
+import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.android.IPv8Android
+import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
+import nl.tudelft.trustchain.common.util.TrustChainHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,8 +23,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var secureStorage: SecureStorage
 
-    private lateinit var coronaCommunity: CoronaCommunity
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,23 +30,11 @@ class MainActivity : AppCompatActivity() {
 
         secureStorage = SecureStorage.getInstance(this)!!
 
-        coronaCommunity = IPv8Android.getInstance().getOverlay<CoronaCommunity>()!!
-
-        coronaCommunity.message.observe(this, Observer { str ->
-            Toast.makeText(applicationContext, str, Toast.LENGTH_LONG).show()
-        })
-
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        val appBarConfiguration = AppBarConfiguration(setOf(
-//            R.id.navigation_home,
-//            R.id.navigation_encounters,
-//            R.id.navigation_trustchain,
-//            R.id.navigation_settings,
-//            R.id.navigation_reports))
+
         navView.setupWithNavController(navController)
 
+        val trustChainHelper = TrustChainHelper(IPv8Android.getInstance().getOverlay()!!)
 
         if (savedInstanceState == null) {
             if (secureStorage.onboardingCompleted) {
@@ -64,6 +52,19 @@ class MainActivity : AppCompatActivity() {
             val consumedExposedIntent =
                 savedInstanceState.getBoolean(STATE_CONSUMED_EXPOSED_INTENT)
         }
+
+
+
+        /**
+         * Incoming message listener
+         *
+         * Add custom message listeners
+         */
+        trustChainHelper.addMessageListener(object: TrustChainCommunity.StringMessageListener {
+            override fun onStringMessageReceived(message: String, peer: Peer?) {
+                Toast.makeText(applicationContext, "Received message '${message}' from peer ${peer?.mid}", Toast.LENGTH_LONG).show()
+            }
+        })
 
     }
 

@@ -790,5 +790,5 @@ Infoline Coronavirus
     <string name="android_accessibility_back_button">"Back"</string>
     <string name="title_trustchain_peers_message">Message Peer</string>
     <string name="trustchain_peers_message_hint">Write message...</string>
-    <string name="trustchain_peers_message_send_button">Send Message</string>
+    <string name="trustchain_peers_message_send_button">Send Toast</string>
 </resources>

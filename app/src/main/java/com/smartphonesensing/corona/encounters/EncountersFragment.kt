@@ -8,8 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.smartphonesensing.corona.databinding.EncountersFragmentBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import org.dpppt.android.sdk.internal.AppConfigManager
 import org.dpppt.android.sdk.internal.database.Database
 import org.dpppt.android.sdk.internal.database.models.Handshake
@@ -48,13 +51,18 @@ class EncountersFragment : Fragment() {
     }
 
     private fun loadHandshakes() {
+        lifecycleScope.launchWhenStarted {
+            while (isActive) {
 
-        viewModel.scanInterval = AppConfigManager.getInstance(context).scanInterval
+                viewModel.scanInterval = AppConfigManager.getInstance(context).scanInterval
 
-        viewModel.scanDuration = AppConfigManager.getInstance(context).scanDuration
+                viewModel.scanDuration = AppConfigManager.getInstance(context).scanDuration
 
-        Database((context)!!).getHandshakes { response: List<Handshake> ->
-            viewModel.updateEncountersList(response)
+                Database((context)!!).getHandshakes { response: List<Handshake> ->
+                    viewModel.updateEncountersList(response)
+                }
+                delay(5000)
+            }
         }
     }
 

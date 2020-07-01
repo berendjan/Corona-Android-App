@@ -16,6 +16,9 @@ class PeersViewModel : ViewModel() {
     fun getMessageString(): MutableLiveData<String> {
         return messageString
     }
+    fun setMessageString(string: String) {
+        messageString.value = string
+    }
 
     private val _selectedPeer = MutableLiveData<PeerListItem>()
     val selectedPeer: LiveData<PeerListItem>
@@ -32,6 +35,8 @@ class PeersViewModel : ViewModel() {
     fun onPeerClicked(peer: PeerListItem) {
         _selectedPeer.value = peer
     }
+
+
 
 }
 

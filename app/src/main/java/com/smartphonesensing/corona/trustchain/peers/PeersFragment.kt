@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
+import nl.tudelft.trustchain.common.util.TrustChainHelper
 
 class PeersFragment : Fragment() {
 
@@ -26,10 +27,6 @@ class PeersFragment : Fragment() {
     private lateinit var binding: TrustchainPeersFragmentBinding
 
     private val viewModel: PeersViewModel by activityViewModels()
-
-    private lateinit var trustChain : TrustChainCommunity
-
-    private lateinit var coronaCommunity : CoronaCommunity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,27 +47,22 @@ class PeersFragment : Fragment() {
             adapter.submitList(it)
         })
 
-
-        trustChain = IPv8Android.getInstance().getOverlay()!!
-
-        coronaCommunity = IPv8Android.getInstance().getOverlay()!!
-
-        loadPeersInfo()
+        loadTrustchainCommunityPeersInfo()
 
         return binding.root
     }
 
-    private fun loadPeersInfo() {
+    private fun loadTrustchainCommunityPeersInfo() {
         lifecycleScope.launchWhenStarted {
             while (isActive) {
-                val coronaCommunity = IPv8Android.getInstance().getOverlay<CoronaCommunity>()!!
+                val trustChainHelper = TrustChainHelper(IPv8Android.getInstance().getOverlay()!!)
 
-                val peers = coronaCommunity.getPeers()
-                val discoveredAddresses = coronaCommunity.network
-                    .getWalkableAddresses(coronaCommunity.serviceId)
-                val discoveredBluetoothAddresses = coronaCommunity.network
-                    .getNewBluetoothPeerCandidates()
-                    .map { it.address }
+                val peers = trustChainHelper.getPeers()
+//                val discoveredAddresses = trustChainHelper.network
+//                    .getWalkableAddresses(coronaCommunity.serviceId)
+//                val discoveredBluetoothAddresses = coronaCommunity.network
+//                    .getNewBluetoothPeerCandidates()
+//                    .map { it.address }
 
 //                val peerItems = peers.map {
 //                    PeerItem(
@@ -101,5 +93,47 @@ class PeersFragment : Fragment() {
             }
         }
     }
+
+//    private fun loadCoronaCommunityPeersInfo() {
+//        lifecycleScope.launchWhenStarted {
+//            while (isActive) {
+//                val trustChainHelper = TrustChainHelper(IPv8Android.getInstance().getOverlay()!!)
+//
+//                val peers = trustChainHelper.getPeers()
+//                val discoveredAddresses = coronaCommunity.network
+//                    .getWalkableAddresses(coronaCommunity.serviceId)
+//                val discoveredBluetoothAddresses = coronaCommunity.network
+//                    .getNewBluetoothPeerCandidates()
+//                    .map { it.address }
+
+//                val peerItems = peers.map {
+//                    PeerItem(
+//                        it
+//                    )
+//                }
+//
+//                val addressItems = discoveredAddresses.map { address ->
+//                    AddressItem(
+//                        address,
+//                        null,
+//                        null
+//                    )
+//                }
+//
+//                val bluetoothAddressItems = discoveredBluetoothAddresses.map { address ->
+//                    AddressItem(
+//                        address,
+//                        null,
+//                        null
+//                    )
+//                }
+//
+//                val items =
+//
+//                viewModel.updatePeerList(peers)
+//                delay(3000)
+//            }
+//        }
+//    }
 
 }

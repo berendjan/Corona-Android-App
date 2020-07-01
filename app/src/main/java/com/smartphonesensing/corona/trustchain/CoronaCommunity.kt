@@ -21,7 +21,6 @@ import nl.tudelft.ipv8.messaging.payload.IntroductionResponsePayload
 import java.util.*
 
 private const val MESSAGE_ID_HELLO = 1
-private const val MESSAGE_ID_CORONA = 2
 private const val BLOCK_TYPE = "demo_block"
 
 class CoronaCommunity : Community() {
@@ -72,7 +71,7 @@ class CoronaCommunity : Community() {
         val (peer: Peer, payload: MyMessage) = packet.getAuthPayload(MyMessage.Deserializer)
         scope.launch{
 
-            _message.value = "Recieved message '${payload.message}' from peer ${peer.mid}"
+            _message.value = "Received message '${payload.message}' from peer ${peer.mid}"
         }
     }
 
@@ -118,16 +117,14 @@ class CoronaCommunity : Community() {
 
 class MyMessage(val message: String) : Serializable {
     override fun serialize(): ByteArray {
-        return message.toByteArray()
+        val m = "#!#$message"
+        return m.toByteArray()
     }
 
     companion object Deserializer : Deserializable<MyMessage> {
         override fun deserialize(buffer: ByteArray, offset: Int): Pair<MyMessage, Int> {
-            return Pair(MyMessage(buffer.toString(Charsets.UTF_8)), buffer.size)
+            val m = buffer.toString(Charsets.UTF_8)
+            return Pair(MyMessage(m.substringAfter("#!#")), buffer.size)
         }
     }
-}
-
-class CoronaPacket() {
-
 }

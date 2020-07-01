@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
+import nl.tudelft.ipv8.util.toHex
 import org.dpppt.android.sdk.internal.database.models.Handshake
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,14 +37,14 @@ class EncountersViewModel : ViewModel() {
 
         val groupedHandshakes = HashMap<String, MutableList<Handshake>?>()
 
-        val sdf: SimpleDateFormat = SimpleDateFormat("dd.MM HH:mm:ss")
+        val sdf = SimpleDateFormat("dd.MM HH:mm:ss")
 
         for (handshake in handshakes) {
             val head = ByteArray(4)
             for (i in 0..3) {
                 head[i] = handshake.ephId.data[i]
             }
-            val identifier = String(head)
+            val identifier = head.toHex()
             if (!groupedHandshakes.containsKey(identifier)) {
                 groupedHandshakes[identifier] = java.util.ArrayList()
             }

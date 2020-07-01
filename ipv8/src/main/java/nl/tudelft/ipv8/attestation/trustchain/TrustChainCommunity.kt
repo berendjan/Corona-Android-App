@@ -14,6 +14,8 @@ import nl.tudelft.ipv8.attestation.trustchain.store.TrustChainStore
 import nl.tudelft.ipv8.attestation.trustchain.validation.ValidationErrors
 import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
 import nl.tudelft.ipv8.messaging.Address
+import nl.tudelft.ipv8.messaging.Deserializable
+import nl.tudelft.ipv8.messaging.Serializable
 import nl.tudelft.ipv8.util.toHex
 import kotlin.coroutines.Continuation
 import kotlin.math.max
@@ -40,6 +42,7 @@ open class TrustChainCommunity(
     private val crawlRequestCache: MutableMap<UInt, CrawlRequest> = mutableMapOf()
 
     init {
+        messageHandlers[MessageId.STRING_MESSAGE] = ::onStringMessage
         messageHandlers[MessageId.HALF_BLOCK] = ::onHalfBlockPacket
         messageHandlers[MessageId.CRAWL_REQUEST] = ::onCrawlRequestPacket
         messageHandlers[MessageId.CRAWL_RESPONSE] = ::onCrawlResponsePacket
@@ -589,6 +592,7 @@ open class TrustChainCommunity(
     }
 
     object MessageId {
+        const val STRING_MESSAGE = 0
         const val HALF_BLOCK = 1
         const val CRAWL_REQUEST = 2
         const val CRAWL_RESPONSE = 3
@@ -617,5 +621,71 @@ open class TrustChainCommunity(
         override fun create(): TrustChainCommunity {
             return TrustChainCommunity(settings, database, crawler)
         }
+    }
+
+    /**
+     * ----------------------------------------------------------------------------------------------------------------------------
+     * ----------------------------------------------------------------------------------------------------------------------------
+     * ----------------------------------------------------------------------------------------------------------------------------
+     *
+     * Mapping of all listeners to notify on message
+     */
+    private val stringMessageListeners: MutableList<StringMessageListener> = mutableListOf()
+
+    fun addStringMessageListener(listener: StringMessageListener) {
+        stringMessageListeners.add(listener)
+    }
+
+    /**
+     * Notify listeners of a specific new block.
+     */
+    private fun notifyStringMessageListeners(message: String, peer: Peer?) {
+        for (listener in stringMessageListeners) {
+            scope.launch {
+                listener.onStringMessageReceived(message, peer)
+            }
+        }
+    }
+
+    /**
+     * Sending a packet to arg peer over network
+     */
+    fun broadcastStringMessage(peer : Peer, message: String) {
+        val packet = serializePacket(MessageId.STRING_MESSAGE, MyMessage(message))
+        send(peer.address, packet)
+    }
+    /**
+     * Receiving a packet from peer over network
+     */
+    private fun onStringMessage(packet: Packet) {
+        val (peer: Peer, payload: MyMessage) = packet.getAuthPayload(MyMessage.Deserializer)
+        notifyStringMessageListeners(payload.message, peer)
+    }
+
+    /**
+     * String Message Object
+     */
+    class MyMessage(val message: String) : Serializable {
+        override fun serialize(): ByteArray {
+            val m = "#!#$message"
+            return m.toByteArray()
+        }
+
+        companion object Deserializer : Deserializable<MyMessage> {
+            override fun deserialize(buffer: ByteArray, offset: Int): Pair<MyMessage, Int> {
+                val m = buffer.toString(Charsets.UTF_8)
+                return Pair(MyMessage(m.substringAfter("#!#")), buffer.size)
+            }
+        }
+    }
+
+    /**
+     * StringMessageListener
+     */
+    interface StringMessageListener {
+        /**
+         * It is called when a listener receives a String Message over the P2P network.
+         */
+        fun onStringMessageReceived(message: String, peer: Peer?)
     }
 }

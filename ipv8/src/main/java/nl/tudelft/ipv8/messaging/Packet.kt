@@ -32,6 +32,7 @@ class Packet(
     fun <T> getAuthPayload(deserializer: Deserializable<T>): Pair<Peer, T> {
         val (peer, remainder) = getAuthPayload()
         val (_, distSize) = GlobalTimeDistributionPayload.deserialize(remainder)
+//        val (payload, _) = deserializer.deserialize(remainder.copyOfRange(distSize,remainder.size - 1), distSize)
         val (payload, _) = deserializer.deserialize(remainder, distSize)
         return Pair(peer, payload)
     }

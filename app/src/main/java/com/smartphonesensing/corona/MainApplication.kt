@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.preference.PreferenceManager
@@ -20,6 +21,7 @@ import com.squareup.sqldelight.android.AndroidSqliteDriver
 import nl.tudelft.ipv8.IPv8Configuration
 import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.OverlayConfiguration
+import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.android.keyvault.AndroidCryptoProvider
 import nl.tudelft.ipv8.android.messaging.bluetooth.BluetoothLeDiscovery
@@ -132,9 +134,8 @@ class MainApplication : Application() {
         defaultCryptoProvider = AndroidCryptoProvider
 
         val config = IPv8Configuration(overlays = listOf(
-            createDiscoveryCommunity(),
-            createTrustChainCommunity(),
-            createCoronaCommunity()
+            createDiscoveryCommunity(bluetooth = false),
+            createTrustChainCommunity()
         ), walkerInterval = 5.0)
 
         IPv8Android.Factory(this)
@@ -153,7 +154,7 @@ class MainApplication : Application() {
 
         /**
          * Step 2: Proposal block validator
-         * Step 1 is in CoronaCommunity.kt
+         * Step 1 is in TrustChainCommunity.kt
          *
          * Optionally, we can register TransactionValidator for our block type to enforce integrity requirements.
          * In the validate method, we also get access to TrustChainStore if there we need to define any
@@ -210,7 +211,7 @@ class MainApplication : Application() {
          */
         trustchain.addListener(BLOCK_TYPE, object : BlockListener {
             override fun onBlockReceived(block: TrustChainBlock) {
-                Log.d("TrustChainDemo", "listener called for action on block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
+                Log.d("CoronaChain", "listener called for action on block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
             }
         })
 
@@ -218,7 +219,7 @@ class MainApplication : Application() {
 
 
 
-    private fun createDiscoveryCommunity(): OverlayConfiguration<DiscoveryCommunity> {
+    private fun createDiscoveryCommunity(bluetooth: Boolean): OverlayConfiguration<DiscoveryCommunity> {
         val randomWalk = RandomWalk.Factory()
         val randomChurn = RandomChurn.Factory()
         val periodicSimilarity = PeriodicSimilarity.Factory()
@@ -229,7 +230,7 @@ class MainApplication : Application() {
         val strategies = mutableListOf(
             randomWalk, randomChurn, periodicSimilarity, nsd
         )
-        if (bluetoothManager.adapter != null && Build.VERSION.SDK_INT >= 24) {
+        if (bluetoothManager.adapter != null && Build.VERSION.SDK_INT >= 24 && bluetooth) {
             val ble = BluetoothLeDiscovery.Factory()
             strategies += ble
         }
@@ -277,6 +278,6 @@ class MainApplication : Application() {
 
     companion object {
         private const val PREF_PRIVATE_KEY = "private_key"
-        private const val BLOCK_TYPE = "demo_block"
+        private const val BLOCK_TYPE = "corona_block"
     }
 }
