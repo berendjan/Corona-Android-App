@@ -8,7 +8,7 @@ import com.smartphonesensing.corona.MainActivity
 import com.smartphonesensing.corona.R
 import nl.tudelft.ipv8.android.service.IPv8Service
 
-class TrustChainService : IPv8Service() {
+class TrustchainService : IPv8Service() {
 
     override fun createNotification(): NotificationCompat.Builder {
 

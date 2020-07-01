@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="peersViewModel"
+            type="com.smartphonesensing.corona.trustchain.peers.PeersViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/peers_message_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/back_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_chevron_right"
+                android:tint="@color/blue_main"
+                android:rotation="180"/>
+
+            <TextView
+                style="@style/CoronaAppTheme.Text.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/title_trustchain_peers_message" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/message_edit_text"
+            android:layout_marginBottom="@dimen/marging_status_error"
+            android:gravity="center_horizontal"
+            android:text="@{peersViewModel.selectedPeer.toPeerString}"/>
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/message_edit_text"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/peers_message_toolbar"
+            android:layout_marginTop="@dimen/header_height"
+            android:layout_marginStart="@dimen/marging_status_error"
+            android:layout_marginEnd="@dimen/marging_status_error"
+            android:imeOptions="actionDone"
+            android:gravity="center_horizontal"
+            android:hint="@string/trustchain_peers_message_hint"
+            android:text="@={peersViewModel.messageString}"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/message_send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/message_edit_text"
+            android:layout_marginTop="@dimen/marging_status_error"
+            android:text="@string/trustchain_peers_message_send_button"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

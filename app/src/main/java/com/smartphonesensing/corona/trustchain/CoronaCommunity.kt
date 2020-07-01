@@ -1,6 +1,13 @@
 package com.smartphonesensing.corona.trustchain
 
 import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.smartphonesensing.corona.trustchain.peers.PeerListItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import nl.tudelft.ipv8.Community
 import nl.tudelft.ipv8.IPv4Address
 import nl.tudelft.ipv8.Peer
@@ -13,21 +20,20 @@ import nl.tudelft.ipv8.messaging.Serializable
 import nl.tudelft.ipv8.messaging.payload.IntroductionResponsePayload
 import java.util.*
 
-private const val MESSAGE_ID = 1
+private const val MESSAGE_ID_HELLO = 1
+private const val MESSAGE_ID_CORONA = 2
 private const val BLOCK_TYPE = "demo_block"
 
 class CoronaCommunity : Community() {
     override val serviceId = "02313685c1912a141279f8248fc8db5899c12346"
 
-
     init {
-        messageHandlers[MESSAGE_ID] = ::onMessage
+        messageHandlers[MESSAGE_ID_HELLO] = ::onHelloMessage
     }
 
-    private fun onMessage(packet: Packet) {
-        val (peer, payload) = packet.getAuthPayload(MyMessage.Deserializer)
-        Log.d("DemoCommunity", peer.mid + ": " + payload.message)
-    }
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String>
+        get() = _message
 
     val discoveredAddressesContacted: MutableMap<IPv4Address, Date> = mutableMapOf()
     val lastTrackerResponses = mutableMapOf<IPv4Address, Date>()
@@ -55,15 +61,25 @@ class CoronaCommunity : Community() {
     /**
      * Sending a packet to arg peer over network
      */
-    fun broadcastGreeting(peer : Peer) {
-        val packet = serializePacket(MESSAGE_ID, MyMessage("Hello!"))
+    fun broadcastHelloMessage(peer : Peer, message: String) {
+        val packet = serializePacket(MESSAGE_ID_HELLO, MyMessage(message))
         send(peer.address, packet)
+    }
+    /**
+     * Receiving a packet from peer over network
+     */
+    private fun onHelloMessage(packet: Packet) {
+        val (peer: Peer, payload: MyMessage) = packet.getAuthPayload(MyMessage.Deserializer)
+        scope.launch{
+
+            _message.value = "Recieved message '${payload.message}' from peer ${peer.mid}"
+        }
     }
 
 
     /**
      * Step 1 creating new proposal block
-     * Next steps in DemoApplication.kt
+     * Next steps in MainApplication.kt
      *
      * The method creates a TrustChainBlock, stores it in the local database, and broadcasts it to all peers.
      */
@@ -110,4 +126,8 @@ class MyMessage(val message: String) : Serializable {
             return Pair(MyMessage(buffer.toString(Charsets.UTF_8)), buffer.size)
         }
     }
+}
+
+class CoronaPacket() {
+
 }

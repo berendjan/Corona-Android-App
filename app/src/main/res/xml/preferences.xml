@@ -8,7 +8,9 @@
 
         <SwitchPreferenceCompat
             app:key="notifications"
-            app:title="Enable notifications"/>
+            app:title="Enable notifications"
+            app:summary="Notify me if I have been exposed to the virus"
+            app:defaultValue="true"/>
 
     </PreferenceCategory>
 
@@ -19,7 +21,8 @@
         <SwitchPreferenceCompat
             app:key="pref_dp3t_tracing"
             app:summary="Send and receive digital handshakes via bluetooth"
-            app:title="Enable tracing"/>
+            app:title="Enable tracing"
+            app:defaultValue="true"/>
 
     </PreferenceCategory>
 
@@ -30,7 +33,8 @@
         <SwitchPreferenceCompat
             app:key="pref_ipv8_trustchain"
             app:summary="Send and receive diagnosed keys via P2P network"
-            app:title="Enable P2P network"/>
+            app:title="Enable P2P network"
+            app:defaultValue="true"/>
 
     </PreferenceCategory>
 

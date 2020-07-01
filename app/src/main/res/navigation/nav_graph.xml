@@ -7,10 +7,10 @@
     app:startDestination="@id/navigation_home" >
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.smartphonesensing.corona.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/home_fragment" />
+    android:id="@+id/navigation_home"
+    android:name="com.smartphonesensing.corona.home.HomeFragment"
+    android:label="@string/title_home"
+    tools:layout="@layout/home_fragment" />
 
     <fragment
         android:id="@+id/navigation_encounters"
@@ -38,7 +38,11 @@
         android:id="@+id/navigation_trustchain"
         android:name="com.smartphonesensing.corona.trustchain.TrustchainFragment"
         android:label="@string/title_trustchain"
-        tools:layout="@layout/trustchain_fragment" />
+        tools:layout="@layout/trustchain_fragment" >
+        <action
+            android:id="@+id/action_navigation_trustchain_to_peersMessageFragment"
+            app:destination="@id/peersMessageFragment" />
+    </fragment>
     <fragment
         android:id="@+id/encounterDetailsFragment"
         android:name="com.smartphonesensing.corona.encounters.EncounterDetailsFragment"
@@ -48,5 +52,9 @@
             android:name="encounter"
             app:argType="com.smartphonesensing.corona.encounters.EncounterItem"/>
     </fragment>
+    <fragment
+        android:id="@+id/peersMessageFragment"
+        android:name="com.smartphonesensing.corona.trustchain.peers.PeersMessageFragment"
+        android:label="PeersMessageFragment" />
 
 </navigation>

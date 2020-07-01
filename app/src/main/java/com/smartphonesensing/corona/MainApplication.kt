@@ -14,7 +14,7 @@ import androidx.core.content.getSystemService
 import androidx.preference.PreferenceManager
 import com.smartphonesensing.corona.storage.SecureStorage
 import com.smartphonesensing.corona.trustchain.CoronaCommunity
-import com.smartphonesensing.corona.trustchain.TrustChainService
+import com.smartphonesensing.corona.trustchain.TrustchainService
 import com.smartphonesensing.corona.util.NotificationUtil
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import nl.tudelft.ipv8.IPv8Configuration
@@ -134,13 +134,13 @@ class MainApplication : Application() {
         val config = IPv8Configuration(overlays = listOf(
             createDiscoveryCommunity(),
             createTrustChainCommunity(),
-            createDemoCommunity()
+            createCoronaCommunity()
         ), walkerInterval = 5.0)
 
         IPv8Android.Factory(this)
             .setConfiguration(config)
             .setPrivateKey(getPrivateKey())
-            .setServiceClass(TrustChainService::class.java)
+            .setServiceClass(TrustchainService::class.java)
             .init()
 
         initTrustChain()
@@ -153,7 +153,7 @@ class MainApplication : Application() {
 
         /**
          * Step 2: Proposal block validator
-         * Step 1 is in DemoCommunity.kt
+         * Step 1 is in CoronaCommunity.kt
          *
          * Optionally, we can register TransactionValidator for our block type to enforce integrity requirements.
          * In the validate method, we also get access to TrustChainStore if there we need to define any
@@ -251,7 +251,7 @@ class MainApplication : Application() {
         )
     }
 
-    private fun createDemoCommunity(): OverlayConfiguration<CoronaCommunity> {
+    private fun createCoronaCommunity(): OverlayConfiguration<CoronaCommunity> {
         val randomWalk = RandomWalk.Factory()
         return OverlayConfiguration(
             Overlay.Factory(CoronaCommunity::class.java),

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="peer"
+            type="com.smartphonesensing.corona.trustchain.peers.PeerListItem" />
+        <variable
+            name="clickListener"
+            type="com.smartphonesensing.corona.trustchain.peers.PeerListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(peer)}">
+
+        <ImageView
+            android:id="@+id/encounters_list_item_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_person"
+            android:tint="@color/status_blue"
+            android:layout_marginStart="@dimen/marging_status_error"/>
+
+        <ImageView
+            android:id="@+id/encounters_list_item_chevron"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_chevron_right"
+            android:tint="@color/status_blue"
+            android:layout_marginTop="@dimen/marging_status_error"
+            android:layout_marginEnd="@dimen/marging_status_error"/>
+
+        <TextView
+            android:id="@+id/encounters_list_item_identifier"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/encounters_list_item_image"
+            app:layout_constraintEnd_toStartOf="@id/encounters_list_item_chevron"
+            style="@style/CoronaAppTheme.Text"
+            android:text="@{peer.peer.mid}"
+            android:layout_marginEnd="@dimen/marging_status_error"
+            android:layout_marginStart="@dimen/marging_status_error"
+            android:layout_marginTop="@dimen/marging_status_error"/>
+
+        <TextView
+            android:id="@+id/encounters_list_item_start"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/encounters_list_item_identifier"
+            app:layout_constraintStart_toEndOf="@id/encounters_list_item_image"
+            app:layout_constraintEnd_toStartOf="@id/encounters_list_item_chevron"
+            app:layout_constraintBottom_toBottomOf="parent"
+            style="@style/CoronaAppTheme.Text"
+            android:text="@{peer.peer.mid}"
+            android:layout_marginEnd="@dimen/marging_status_error"
+            android:layout_marginStart="@dimen/marging_status_error"
+            android:layout_marginTop="@dimen/marging_status_error"
+            android:layout_marginBottom="@dimen/marging_status_error"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

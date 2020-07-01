@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -21,7 +22,7 @@ class EncountersFragment : Fragment() {
 
     private lateinit var binding: EncountersFragmentBinding
 
-    private lateinit var viewModel: EncountersViewModel
+    private val viewModel: EncountersViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,8 +37,6 @@ class EncountersFragment : Fragment() {
                 .actionNavigationEncountersToEncounterDetailsFragment(encounter))
         })
         binding.encountersRecycler.adapter = adapter
-
-        viewModel = ViewModelProvider(this).get(EncountersViewModel::class.java)
 
         loadHandshakes()
 

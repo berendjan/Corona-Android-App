@@ -6,6 +6,8 @@
     <string name="title_trustchain">Trustchain</string>
     <string name="title_encounters">Encounters</string>
     <string name="title_encounter_details">Encounter</string>
+    <string name="title_trustchain_peers">Peers</string>
+    <string name="title_trustchain_blocks">Blocks</string>
 
 
     <!-- Loading View: Erneut laden -->
@@ -786,4 +788,7 @@ Infoline Coronavirus
 
     <!-- Accessibility Talk back information for android back button in toolbar -->
     <string name="android_accessibility_back_button">"Back"</string>
+    <string name="title_trustchain_peers_message">Message Peer</string>
+    <string name="trustchain_peers_message_hint">Write message...</string>
+    <string name="trustchain_peers_message_send_button">Send Message</string>
 </resources>

@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.smartphonesensing.corona.R
 import com.smartphonesensing.corona.databinding.HomeFragmentBinding
+import kotlin.random.Random
 
 
 class HomeFragment : Fragment() {
@@ -17,7 +20,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: HomeFragmentBinding
 
-    private lateinit var viewModel: HomeViewModel
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,7 +31,20 @@ class HomeFragment : Fragment() {
 
         setHeaderOpacityWithScroll()
 
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        val images = listOf(
+            R.drawable.header_basel,
+            R.drawable.header_bern,
+            R.drawable.header_chur,
+            R.drawable.header_geneva,
+            R.drawable.header_lausanne,
+            R.drawable.header_locarno,
+            R.drawable.header_lugano,
+            R.drawable.header_luzern,
+            R.drawable.header_stgallen,
+            R.drawable.header_zurich
+        )
+
+        binding.headerImage.setImageResource(images[Random.nextInt(images.size)])
 
         /** set LifeCycleOwner of binding to this fragment
          * can directly home_fragment.xml to viewModel LiveData object
