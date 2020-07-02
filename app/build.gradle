@@ -10,12 +10,22 @@ android {
 
     defaultConfig {
         applicationId "com.smartphonesensing.corona"
-        minSdkVersion 26
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    flavorDimensions "version"
+
+    productFlavors {
+        calibration {
+        }
+        production {
+        }
     }
 
     kotlinOptions {
@@ -52,9 +62,10 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    implementation project(path: ':sdk')
     implementation project(':ipv8-android')
 
-    implementation 'org.dpppt:dp3t-sdk-android:0.2.6'
+//    implementation 'org.dpppt:dp3t-sdk-android:0.2.6'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

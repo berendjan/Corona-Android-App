@@ -1,3 +1,4 @@
+include ':sdk'
 include ':tracker'
 include ':ipv8-jvm'
 include ':ipv8-android'
