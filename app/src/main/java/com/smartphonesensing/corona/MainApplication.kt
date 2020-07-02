@@ -78,9 +78,8 @@ class MainApplication : Application() {
                 .add("com.smartphonesensing.corona", "sha256/YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg=")
                 .build()
             DP3T.setCertificatePinner(certificatePinner)
-            DP3THelper.setCryptoModule(CryptoModule.getInstance(this))
-            DP3THelper.setAppConfigManager(AppConfigManager.getInstance(this))
         }
+        DP3THelper.setContext(this)
         //demo.dpppt.org
     }
 

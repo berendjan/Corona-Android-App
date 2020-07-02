@@ -1,29 +1,67 @@
 package com.smartphonesensing.corona.util
 
-import org.dpppt.android.sdk.DP3T
+import android.content.Context
+import android.util.Pair
+import okio.ByteString.Companion.decodeBase64
 import org.dpppt.android.sdk.internal.AppConfigManager
+import org.dpppt.android.sdk.internal.backend.models.ExposeeRequest
 import org.dpppt.android.sdk.internal.crypto.CryptoModule
+import org.dpppt.android.sdk.internal.crypto.SKList
+import org.dpppt.android.sdk.internal.database.Database
+import org.dpppt.android.sdk.internal.database.models.Contact
+import org.dpppt.android.sdk.internal.util.Base64Util
+import org.dpppt.android.sdk.internal.util.DayDate
 
 object DP3THelper {
-    private lateinit var DP3T: DP3T
-    private lateinit var appConfigManager: AppConfigManager
-    private lateinit var cryptoModule: CryptoModule
 
-    fun setDP3T(dp3t: DP3T) {
-        DP3T = dp3t
+    private const val NUMBER_OF_DAYS_EXPOSED = 15
+
+    private lateinit var context: Context
+
+    fun setContext(c: Context) {
+        context = c
     }
 
-    fun setAppConfigManager(manager: AppConfigManager) {
-        appConfigManager = manager
+    val cryptoModule: CryptoModule
+        get() {
+            return CryptoModule.getInstance(context)
+        }
+
+    val appConfigManager: AppConfigManager
+        get() {
+            return AppConfigManager.getInstance(context)
+        }
+
+    val database: Database
+        get() {
+            return Database((context)!!)
+        }
+
+    fun getSKForDayDate(dayDate: DayDate) : ExposeeRequest? {
+        return cryptoModule.getSecretKeyForPublishing(dayDate, null)
     }
 
-    fun setCryptoModule(module: CryptoModule) {
-        cryptoModule = module
+    fun getSKList() : SKList {
+        val secretKeyList = SKList()
+        var dayDate = DayDate()
+        for (i in 0 until NUMBER_OF_DAYS_EXPOSED) {
+            getSKForDayDate(dayDate)?.let {
+                secretKeyList.add(Pair(dayDate, Base64Util.fromBase64(it.key)))
+            }
+            dayDate = dayDate.subtractDays(1)
+        }
+        return secretKeyList
     }
 
-    fun getEphIds() {
+    fun getEphIds(secretKey: ByteArray, fromDate: DayDate, toDate: DayDate) {
 
+        cryptoModule.checkContacts(secretKey,
+            fromDate.startOfDayTimestamp,
+            toDate.startOfDayTimestamp,
+            { timeFrom, timeUntil -> database.getContacts(timeFrom, timeUntil) },
+            { contact: Contact? ->
+                    // contact?.let {  } TODO: Do something with exposed contact.
+                })
     }
-
 
 }

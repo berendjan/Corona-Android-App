@@ -61,6 +61,7 @@ class EncountersFragment : Fragment() {
                 Database((context)!!).getHandshakes { response: List<Handshake> ->
                     viewModel.updateEncountersList(response)
                 }
+                Database((context)!!).exposureDays
                 delay(5000)
             }
         }
