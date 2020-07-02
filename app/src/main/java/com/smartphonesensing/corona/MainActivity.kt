@@ -2,18 +2,20 @@ package com.smartphonesensing.corona
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.smartphonesensing.corona.onboarding.OnboardingActivity
 import com.smartphonesensing.corona.storage.SecureStorage
+import com.smartphonesensing.corona.trustchain.CoronaPayload
+import com.smartphonesensing.corona.trustchain.MyMessage
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
+import nl.tudelft.ipv8.util.toHex
 import nl.tudelft.trustchain.common.util.TrustChainHelper
 
 class MainActivity : AppCompatActivity() {
@@ -54,15 +56,28 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        /**
+         * Add custom listener for message
+         */
+        trustChainHelper.addMessageListener(object : TrustChainCommunity.GeneralPacketListener(
+            MyMessage.Deserializer) {
+            override fun onGeneralPacketReceived(contents: Any?, peer: Peer) {
+                contents as MyMessage
+                Toast.makeText(applicationContext, "Received message '${contents.message}' from peer ${peer.mid}", Toast.LENGTH_LONG).show()
+            }
+        })
+
 
         /**
-         * Incoming message listener
-         *
-         * Add custom message listeners
+         * Add listener for SKList packet denoted in TrustChainPayload
          */
-        trustChainHelper.addMessageListener(object: TrustChainCommunity.StringMessageListener {
-            override fun onStringMessageReceived(message: String, peer: Peer?) {
-                Toast.makeText(applicationContext, "Received message '${message}' from peer ${peer?.mid}", Toast.LENGTH_LONG).show()
+        trustChainHelper.addSKListPacketListener(object : TrustChainCommunity.GeneralPacketListener(
+            CoronaPayload.Deserializer) {
+            override fun onGeneralPacketReceived(contents: Any?, peer: Peer) {
+                contents as CoronaPayload
+                for (pair in contents.SKList) {
+                    Log.i("SKLIST", "Pair date " + pair.first.formatAsString() + " Key " + pair.second.toHex())
+                }
             }
         })
 

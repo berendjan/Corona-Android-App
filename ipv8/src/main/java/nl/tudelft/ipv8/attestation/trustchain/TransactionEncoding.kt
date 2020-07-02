@@ -54,7 +54,7 @@ object TransactionEncoding {
     }
 
     /**
-     * Decodes data from version "a" binary stream. Returns the pair containg the offset and
+     * Decodes data from version "a" binary stream. Returns the pair containing the offset and
      * the decoded value.
      */
     fun decode(buffer: ByteArray, offset: Int = 0): Pair<Int, Any?> {

@@ -3,6 +3,7 @@ package com.smartphonesensing.corona.trustchain.peers
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +16,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.smartphonesensing.corona.databinding.TrustchainPeersMessageFragmentBinding
-import com.smartphonesensing.corona.trustchain.CoronaCommunity
 import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
+import nl.tudelft.ipv8.util.hexToBytes
+import nl.tudelft.ipv8.util.toHex
 import nl.tudelft.trustchain.common.util.TrustChainHelper
 
 
@@ -62,6 +64,8 @@ class PeersMessageFragment : Fragment() {
             } else {
                 Toast.makeText(context, "You cannot send an empty message", Toast.LENGTH_SHORT).show()
             }
+
+
         }
 
         binding.peersViewModel = viewModel

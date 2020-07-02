@@ -14,8 +14,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.preference.PreferenceManager
 import com.smartphonesensing.corona.storage.SecureStorage
-import com.smartphonesensing.corona.trustchain.CoronaCommunity
+//import com.smartphonesensing.corona.trustchain.CoronaCommunity
+import com.smartphonesensing.corona.trustchain.CoronaPayload
+import com.smartphonesensing.corona.trustchain.MyMessage
 import com.smartphonesensing.corona.trustchain.TrustchainService
+import com.smartphonesensing.corona.util.DP3THelper
 import com.smartphonesensing.corona.util.NotificationUtil
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import nl.tudelft.ipv8.IPv8Configuration
@@ -32,6 +35,7 @@ import nl.tudelft.ipv8.attestation.trustchain.store.TrustChainStore
 import nl.tudelft.ipv8.attestation.trustchain.validation.TransactionValidator
 import nl.tudelft.ipv8.keyvault.PrivateKey
 import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
+import nl.tudelft.ipv8.messaging.Packet
 import nl.tudelft.ipv8.peerdiscovery.DiscoveryCommunity
 import nl.tudelft.ipv8.peerdiscovery.strategy.PeriodicSimilarity
 import nl.tudelft.ipv8.peerdiscovery.strategy.RandomChurn
@@ -40,8 +44,11 @@ import nl.tudelft.ipv8.sqldelight.Database
 import nl.tudelft.ipv8.util.hexToBytes
 import nl.tudelft.ipv8.util.toHex
 import okhttp3.CertificatePinner
+import okhttp3.internal.wait
 import org.dpppt.android.sdk.DP3T
 import org.dpppt.android.sdk.InfectionStatus
+import org.dpppt.android.sdk.internal.AppConfigManager
+import org.dpppt.android.sdk.internal.crypto.CryptoModule
 import org.dpppt.android.sdk.internal.database.models.ExposureDay
 import org.dpppt.android.sdk.internal.util.ProcessUtil
 import org.dpppt.android.sdk.util.SignatureUtil
@@ -66,12 +73,15 @@ class MainApplication : Application() {
             val publicKey = SignatureUtil.getPublicKeyFromBase64OrThrow(
                 BUCKET_PUBLIC_KEY
             )
-            DP3T.init(this, "org.dpppt.demo", true, publicKey)
+            DP3T.init(this, "com.smartphonesensing.corona", true, publicKey)
             val certificatePinner: CertificatePinner = CertificatePinner.Builder()
-                .add("demo.dpppt.org", "sha256/YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg=")
+                .add("com.smartphonesensing.corona", "sha256/YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg=")
                 .build()
             DP3T.setCertificatePinner(certificatePinner)
+            DP3THelper.setCryptoModule(CryptoModule.getInstance(this))
+            DP3THelper.setAppConfigManager(AppConfigManager.getInstance(this))
         }
+        //demo.dpppt.org
     }
 
     private val contactUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -164,7 +174,7 @@ class MainApplication : Application() {
          * In our case, we require proposal blocks to include a message field. We accept any transaction
          * for agreement blocks as we are only concerned with the signature.
          */
-        trustchain.registerTransactionValidator(BLOCK_TYPE, object : TransactionValidator {
+        trustchain.registerTransactionValidator(DEMO_BLOCK_TYPE, object : TransactionValidator {
             override fun validate(
                 block: TrustChainBlock,
                 database: TrustChainStore
@@ -187,7 +197,7 @@ class MainApplication : Application() {
          *
          * Right now it signs all valid blocks with simple transaction
          */
-        trustchain.registerBlockSigner(BLOCK_TYPE, object : BlockSigner {
+        trustchain.registerBlockSigner(DEMO_BLOCK_TYPE, object : BlockSigner {
             override fun onSignatureRequest(block: TrustChainBlock) {
                 Log.d("TrustChainDemo", "Create agreement block for incoming block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
 //                val tx = mapOf<Any?, Any?>("messageKey2" to "messageValue2")
@@ -209,7 +219,7 @@ class MainApplication : Application() {
          * param 1 : block type to listen to
          * param 2 : object implementing BlockListener interface
          */
-        trustchain.addListener(BLOCK_TYPE, object : BlockListener {
+        trustchain.addListener(DEMO_BLOCK_TYPE, object : BlockListener {
             override fun onBlockReceived(block: TrustChainBlock) {
                 Log.d("CoronaChain", "listener called for action on block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
             }
@@ -252,14 +262,6 @@ class MainApplication : Application() {
         )
     }
 
-    private fun createCoronaCommunity(): OverlayConfiguration<CoronaCommunity> {
-        val randomWalk = RandomWalk.Factory()
-        return OverlayConfiguration(
-            Overlay.Factory(CoronaCommunity::class.java),
-            listOf(randomWalk)
-        )
-    }
-
     private fun getPrivateKey(): PrivateKey {
         // Load a key from the shared preferences
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -278,6 +280,8 @@ class MainApplication : Application() {
 
     companion object {
         private const val PREF_PRIVATE_KEY = "private_key"
-        private const val BLOCK_TYPE = "corona_block"
+        private const val DEMO_BLOCK_TYPE = "demo_block"
+        private const val CORONA_BLOCK_TYPE = "corona_block"
     }
+
 }

@@ -14,7 +14,6 @@ import java.util.*
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
-
 abstract class Community : Overlay {
     protected val prefix: ByteArray
         get() = ByteArray(0) + PREFIX_IPV8 + VERSION + serviceId.hexToBytes()

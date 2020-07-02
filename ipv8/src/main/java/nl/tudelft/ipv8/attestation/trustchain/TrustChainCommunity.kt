@@ -42,7 +42,8 @@ open class TrustChainCommunity(
     private val crawlRequestCache: MutableMap<UInt, CrawlRequest> = mutableMapOf()
 
     init {
-        messageHandlers[MessageId.STRING_MESSAGE] = ::onStringMessage
+        messageHandlers[MessageId.STRING_MESSAGE] = ::onCoronaPacket
+        messageHandlers[MessageId.CORONA_PACKET] = ::onCoronaPacket
         messageHandlers[MessageId.HALF_BLOCK] = ::onHalfBlockPacket
         messageHandlers[MessageId.CRAWL_REQUEST] = ::onCrawlRequestPacket
         messageHandlers[MessageId.CRAWL_RESPONSE] = ::onCrawlResponsePacket
@@ -592,7 +593,6 @@ open class TrustChainCommunity(
     }
 
     object MessageId {
-        const val STRING_MESSAGE = 0
         const val HALF_BLOCK = 1
         const val CRAWL_REQUEST = 2
         const val CRAWL_RESPONSE = 3
@@ -600,6 +600,8 @@ open class TrustChainCommunity(
         const val HALF_BLOCK_BROADCAST = 5
         const val HALF_BLOCK_PAIR_BROADCAST = 6
         const val EMPTY_CRAWL_RESPONSE = 7
+        const val STRING_MESSAGE = 8
+        const val CORONA_PACKET = 9
     }
 
     companion object {
@@ -630,62 +632,52 @@ open class TrustChainCommunity(
      *
      * Mapping of all listeners to notify on message
      */
-    private val stringMessageListeners: MutableList<StringMessageListener> = mutableListOf()
+    fun broadcastPacketToPeer(peer: Peer, msgId: Int, obj : Serializable) {
+        send(peer.address, serializePacket(msgId, obj))
+    }
 
-    fun addStringMessageListener(listener: StringMessageListener) {
+    /**
+     * Receiving a packet from peer with string message
+     */
+    private val stringMessageListeners: MutableList<GeneralPacketListener> = mutableListOf()
+    fun addStringMessageListener(listener: GeneralPacketListener) {
         stringMessageListeners.add(listener)
     }
-
-    /**
-     * Notify listeners of a specific new block.
-     */
-    private fun notifyStringMessageListeners(message: String, peer: Peer?) {
-        for (listener in stringMessageListeners) {
+    private fun onStringPacket(packet: Packet) {
+        for (listener in coronaPacketListeners) {
+            val (peer: Peer, payload: Any?) = packet.getAuthPayload(listener.deserializer)
             scope.launch {
-                listener.onStringMessageReceived(message, peer)
+                listener.onGeneralPacketReceived(payload, peer)
             }
+
         }
     }
 
     /**
-     * Sending a packet to arg peer over network
+     * Receiving a packet from peer corona info
      */
-    fun broadcastStringMessage(peer : Peer, message: String) {
-        val packet = serializePacket(MessageId.STRING_MESSAGE, MyMessage(message))
-        send(peer.address, packet)
+    private val coronaPacketListeners: MutableList<GeneralPacketListener> = mutableListOf()
+    fun addCoronaPacketListener(listener: GeneralPacketListener) {
+        coronaPacketListeners.add(listener)
     }
-    /**
-     * Receiving a packet from peer over network
-     */
-    private fun onStringMessage(packet: Packet) {
-        val (peer: Peer, payload: MyMessage) = packet.getAuthPayload(MyMessage.Deserializer)
-        notifyStringMessageListeners(payload.message, peer)
-    }
-
-    /**
-     * String Message Object
-     */
-    class MyMessage(val message: String) : Serializable {
-        override fun serialize(): ByteArray {
-            val m = "#!#$message"
-            return m.toByteArray()
-        }
-
-        companion object Deserializer : Deserializable<MyMessage> {
-            override fun deserialize(buffer: ByteArray, offset: Int): Pair<MyMessage, Int> {
-                val m = buffer.toString(Charsets.UTF_8)
-                return Pair(MyMessage(m.substringAfter("#!#")), buffer.size)
+    private fun onCoronaPacket(packet: Packet) {
+        for (listener in coronaPacketListeners) {
+            val (peer: Peer, payload: Any?) = packet.getAuthPayload(listener.deserializer)
+            scope.launch {
+                listener.onGeneralPacketReceived(payload, peer)
             }
+
         }
     }
 
+
     /**
-     * StringMessageListener
+     * Abstract Packet Listener class
      */
-    interface StringMessageListener {
+    abstract class GeneralPacketListener(val deserializer: Deserializable<*>) {
         /**
          * It is called when a listener receives a String Message over the P2P network.
          */
-        fun onStringMessageReceived(message: String, peer: Peer?)
+        abstract fun onGeneralPacketReceived(contents: Any?, peer: Peer)
     }
 }

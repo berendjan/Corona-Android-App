@@ -10,12 +10,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.smartphonesensing.corona.databinding.TrustchainPeersFragmentBinding
-import com.smartphonesensing.corona.trustchain.CoronaCommunity
 import com.smartphonesensing.corona.trustchain.TrustchainFragmentDirections
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import nl.tudelft.ipv8.android.IPv8Android
-import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
 import nl.tudelft.trustchain.common.util.TrustChainHelper
 
 class PeersFragment : Fragment() {
@@ -93,47 +91,4 @@ class PeersFragment : Fragment() {
             }
         }
     }
-
-//    private fun loadCoronaCommunityPeersInfo() {
-//        lifecycleScope.launchWhenStarted {
-//            while (isActive) {
-//                val trustChainHelper = TrustChainHelper(IPv8Android.getInstance().getOverlay()!!)
-//
-//                val peers = trustChainHelper.getPeers()
-//                val discoveredAddresses = coronaCommunity.network
-//                    .getWalkableAddresses(coronaCommunity.serviceId)
-//                val discoveredBluetoothAddresses = coronaCommunity.network
-//                    .getNewBluetoothPeerCandidates()
-//                    .map { it.address }
-
-//                val peerItems = peers.map {
-//                    PeerItem(
-//                        it
-//                    )
-//                }
-//
-//                val addressItems = discoveredAddresses.map { address ->
-//                    AddressItem(
-//                        address,
-//                        null,
-//                        null
-//                    )
-//                }
-//
-//                val bluetoothAddressItems = discoveredBluetoothAddresses.map { address ->
-//                    AddressItem(
-//                        address,
-//                        null,
-//                        null
-//                    )
-//                }
-//
-//                val items =
-//
-//                viewModel.updatePeerList(peers)
-//                delay(3000)
-//            }
-//        }
-//    }
-
 }
