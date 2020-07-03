@@ -179,7 +179,7 @@ class MainApplication : Application() {
                 database: TrustChainStore
             ): Boolean {
                 Log.d("CoronaChain", "validator called for block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
-                return block.transaction["messageKey"] != null || block.isAgreement
+                return block.transaction["SKList"] != null || block.isAgreement || block.transaction["message"] != null
             }
         })
 

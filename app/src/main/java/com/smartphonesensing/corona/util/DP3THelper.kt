@@ -13,7 +13,7 @@ import org.dpppt.android.sdk.internal.util.DayDate
 
 object DP3THelper {
 
-    private const val NUMBER_OF_DAYS_EXPOSED = 15
+    private const val NUMBER_OF_DAYS_EXPOSED = 10
 
     private lateinit var context: Context
 

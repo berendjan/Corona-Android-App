@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.smartphonesensing.corona.databinding.TrustchainPeersMessageFragmentBinding
+import com.smartphonesensing.corona.trustchain.CoronaPayload
 import com.smartphonesensing.corona.util.DP3THelper
 import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -61,10 +62,19 @@ class PeersMessageFragment : Fragment() {
 
             val secretKeyList = DP3THelper.getSKList()
 
-            trustChainHelper.sendSKListToPeer(
-                viewModel.selectedPeer.value!!.peer,
-                secretKeyList
-            )
+//            val stringSKList: String = CoronaPayload(secretKeyList).serialize().toHex()
+//
+//            trustChainHelper.createDemoProposalBlock(stringSKList,
+//                viewModel.selectedPeer.value!!.peer.publicKey.keyToBin())
+
+            trustChainHelper.createCoronaProposalBlock(secretKeyList,
+                viewModel.selectedPeer.value!!.peer.publicKey.keyToBin())
+
+//            trustChainHelper.sendSKListToPeer(
+//                viewModel.selectedPeer.value!!.peer,
+//                secretKeyList
+//            )
+
 
             if (viewModel.getMessageString().value?.length ?: 0 > 0) {
                 trustChainHelper.sendMessageToPeer(

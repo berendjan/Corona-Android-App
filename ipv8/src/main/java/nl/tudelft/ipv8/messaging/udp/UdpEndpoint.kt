@@ -59,7 +59,9 @@ open class UdpEndpoint(
                         tftpEndpoint.send(address, data)
                     } else {
                         logger.warn { "The packet is larger then UDP_PAYLOAD_LIMIT and the peer " +
-                            "does not support TFTP" }
+                                "does not support TFTP" }
+                        throw IllegalStateException("The packet size ${data.size} is larger then UDP_PAYLOAD_LIMIT ${UDP_PAYLOAD_LIMIT} and the peer " +
+                                " does not support TFTP")
                     }
                 } else {
                     send(address, data)
