@@ -42,7 +42,7 @@ open class TrustChainCommunity(
     private val crawlRequestCache: MutableMap<UInt, CrawlRequest> = mutableMapOf()
 
     init {
-        messageHandlers[MessageId.STRING_MESSAGE] = ::onCoronaPacket
+        messageHandlers[MessageId.STRING_MESSAGE] = ::onStringPacket
         messageHandlers[MessageId.CORONA_PACKET] = ::onCoronaPacket
         messageHandlers[MessageId.HALF_BLOCK] = ::onHalfBlockPacket
         messageHandlers[MessageId.CRAWL_REQUEST] = ::onCrawlRequestPacket
@@ -644,7 +644,7 @@ open class TrustChainCommunity(
         stringMessageListeners.add(listener)
     }
     private fun onStringPacket(packet: Packet) {
-        for (listener in coronaPacketListeners) {
+        for (listener in stringMessageListeners) {
             val (peer: Peer, payload: Any?) = packet.getAuthPayload(listener.deserializer)
             scope.launch {
                 listener.onGeneralPacketReceived(payload, peer)

@@ -178,7 +178,7 @@ class MainApplication : Application() {
                 block: TrustChainBlock,
                 database: TrustChainStore
             ): Boolean {
-                Log.d("TrustChainDemo", "validator called for block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
+                Log.d("CoronaChain", "validator called for block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
                 return block.transaction["messageKey"] != null || block.isAgreement
             }
         })
@@ -198,7 +198,7 @@ class MainApplication : Application() {
          */
         trustchain.registerBlockSigner(DEMO_BLOCK_TYPE, object : BlockSigner {
             override fun onSignatureRequest(block: TrustChainBlock) {
-                Log.d("TrustChainDemo", "Create agreement block for incoming block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
+                Log.d("CoronaChain", "Create agreement block for incoming block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
 //                val tx = mapOf<Any?, Any?>("messageKey2" to "messageValue2")
                 trustchain.createAgreementBlock(block, block.transaction)
             }

@@ -162,7 +162,7 @@ class TrustChainHelper(
     fun createDemoProposalBlock(
         message: String,
         publicKey: ByteArray,
-        blockType: String = "demo_block"
+        blockType: String = DEMO_BLOCK_TYPE
     ): TrustChainBlock {
         val transaction = mapOf("message" to message)
         return trustChainCommunity.createProposalBlock(blockType, transaction, publicKey)
@@ -174,7 +174,7 @@ class TrustChainHelper(
     fun createCoronaProposalBlock(
         SKList: SKList,
         publicKey: ByteArray,
-        blockType: String = "corona_block"
+        blockType: String = DEMO_BLOCK_TYPE
     ): TrustChainBlock {
 
         val transaction = mapOf(
@@ -199,6 +199,12 @@ class TrustChainHelper(
             }
         }
         return SKList
+    }
+
+    companion object {
+        private const val PREF_PRIVATE_KEY = "private_key"
+        private const val DEMO_BLOCK_TYPE = "demo_block"
+        private const val CORONA_BLOCK_TYPE = "corona_block"
     }
 
     object MessageId {
