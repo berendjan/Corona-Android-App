@@ -2,7 +2,6 @@ package com.smartphonesensing.corona.util
 
 import android.content.Context
 import android.util.Pair
-import okio.ByteString.Companion.decodeBase64
 import org.dpppt.android.sdk.internal.AppConfigManager
 import org.dpppt.android.sdk.internal.backend.models.ExposeeRequest
 import org.dpppt.android.sdk.internal.crypto.CryptoModule
@@ -34,7 +33,7 @@ object DP3THelper {
 
     val database: Database
         get() {
-            return Database((context)!!)
+            return Database(context)
         }
 
     fun getSKForDayDate(dayDate: DayDate) : ExposeeRequest? {
@@ -53,7 +52,21 @@ object DP3THelper {
         return secretKeyList
     }
 
-    fun getEphIds(secretKey: ByteArray, fromDate: DayDate, toDate: DayDate) {
+    fun checkContactsForSKListForNDays(SKList: SKList, nDays: Int = NUMBER_OF_DAYS_EXPOSED) : List<Contact> {
+        val contacts : MutableList<Contact> = mutableListOf<Contact>()
+        for (pair : android.util.Pair<DayDate, ByteArray> in SKList) {
+            cryptoModule.checkContacts(pair.second,
+                DayDate().subtractDays(nDays).startOfDayTimestamp,
+                DayDate().startOfDayTimestamp,
+                { timeFrom, timeUntil -> database.getContacts(timeFrom, timeUntil) },
+                { contact: Contact? ->
+                    contact?.let { contacts.add(contact) }
+                })
+        }
+        return contacts
+    }
+
+    fun checkContacts(secretKey: ByteArray, fromDate: DayDate, toDate: DayDate) {
 
         cryptoModule.checkContacts(secretKey,
             fromDate.startOfDayTimestamp,
