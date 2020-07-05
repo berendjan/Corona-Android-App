@@ -5,16 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.smartphonesensing.corona.databinding.EncountersFragmentBinding
+import androidx.preference.PreferenceManager
+import com.smartphonesensing.corona.util.DP3THelper
 import kotlinx.coroutines.delay
+import com.smartphonesensing.corona.databinding.EncountersFragmentBinding
 import kotlinx.coroutines.isActive
-import org.dpppt.android.sdk.internal.AppConfigManager
-import org.dpppt.android.sdk.internal.database.Database
 import org.dpppt.android.sdk.internal.database.models.Handshake
 
 class EncountersFragment : Fragment() {
@@ -25,7 +25,7 @@ class EncountersFragment : Fragment() {
 
     private lateinit var binding: EncountersFragmentBinding
 
-    private val viewModel: EncountersViewModel by viewModels()
+    private val viewModel: EncountersViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,9 +37,11 @@ class EncountersFragment : Fragment() {
         val adapter = EncountersAdapter(EncounterListener { encounter ->
             viewModel.onEncounterClicked(encounter)
             findNavController().navigate(EncountersFragmentDirections
-                .actionNavigationEncountersToEncounterDetailsFragment(encounter))
+                .actionNavigationEncountersToEncounterDetailsFragment())
         })
         binding.encountersRecycler.adapter = adapter
+
+        DP3THelper.updateContactsFromDatabase()
 
         loadHandshakes()
 
@@ -54,16 +56,33 @@ class EncountersFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             while (isActive) {
 
-                viewModel.scanInterval = AppConfigManager.getInstance(context).scanInterval
+                viewModel.scanInterval = DP3THelper.appConfigManager.scanInterval
 
-                viewModel.scanDuration = AppConfigManager.getInstance(context).scanDuration
+                viewModel.scanDuration = DP3THelper.appConfigManager.scanDuration
 
-                Database((context)!!).getHandshakes { response: List<Handshake> ->
-                    viewModel.updateEncountersList(response)
+                DP3THelper.database.getHandshakes { response: List<Handshake> ->
+                    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    val riskyHandshakesOnly = sharedPreferences.getBoolean("pref_dp3t_risk", false)
+                    viewModel.updateEncountersList(response, riskyHandshakesOnly)
                 }
-                val contacts = Database((context)!!).contacts
-                Database((context)!!).exposureDays
+
                 delay(5000)
+            }
+        }
+    }
+
+    private fun loadContacts() {
+        lifecycleScope.launchWhenStarted {
+            while (isActive) {
+
+                viewModel.scanInterval = DP3THelper.appConfigManager.scanInterval
+
+                viewModel.scanDuration = DP3THelper.appConfigManager.scanInterval
+
+                viewModel.updateContactsList(DP3THelper.database.contacts)
+
+                delay(5000)
+
             }
         }
     }

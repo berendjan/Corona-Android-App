@@ -47,11 +47,7 @@
         android:id="@+id/encounterDetailsFragment"
         android:name="com.smartphonesensing.corona.encounters.EncounterDetailsFragment"
         android:label="fragment_encounter_details"
-        tools:layout="@layout/encounter_details_fragment" >
-        <argument
-            android:name="encounter"
-            app:argType="com.smartphonesensing.corona.encounters.EncounterItem"/>
-    </fragment>
+        tools:layout="@layout/encounter_details_fragment" />
     <fragment
         android:id="@+id/peersMessageFragment"
         android:name="com.smartphonesensing.corona.trustchain.peers.PeersMessageFragment"

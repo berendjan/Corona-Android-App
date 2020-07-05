@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -12,6 +14,7 @@ import com.smartphonesensing.corona.onboarding.OnboardingActivity
 import com.smartphonesensing.corona.storage.SecureStorage
 import com.smartphonesensing.corona.trustchain.CoronaPayload
 import com.smartphonesensing.corona.trustchain.MyMessage
+import com.smartphonesensing.corona.util.DP3THelper
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         val trustChainHelper = TrustChainHelper(IPv8Android.getInstance().getOverlay()!!)
+
 
         if (savedInstanceState == null) {
             if (secureStorage.onboardingCompleted) {

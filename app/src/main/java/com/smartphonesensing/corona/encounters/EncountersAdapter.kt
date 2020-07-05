@@ -6,15 +6,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.DiffUtil
 import com.smartphonesensing.corona.databinding.EncountersListItemBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 
 class EncountersAdapter(
     val clickListener: EncounterListener) :
-        ListAdapter<EncounterItem, RecyclerView.ViewHolder>(ItemDiffCallback()) {
+        ListAdapter<ContactItem, RecyclerView.ViewHolder>(ItemDiffCallback()) {
 
-    private val adapterScope = CoroutineScope(Dispatchers.Default)
+//    private val adapterScope = CoroutineScope(Dispatchers.Default)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return ViewHolder.from(parent)
     }
@@ -26,7 +24,7 @@ class EncountersAdapter(
     }
 
     class ViewHolder private constructor(val binding: EncountersListItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(encounterItem: EncounterItem, clickListener: EncounterListener) {
+        fun bind(encounterItem: ContactItem, clickListener: EncounterListener) {
             binding.encounterItem = encounterItem
             binding.clickListener = clickListener
         }
@@ -41,18 +39,18 @@ class EncountersAdapter(
     }
 }
 
-class ItemDiffCallback : DiffUtil.ItemCallback<EncounterItem>() {
+class ItemDiffCallback : DiffUtil.ItemCallback<ContactItem>() {
 
-    override fun areItemsTheSame(oldItem: EncounterItem, newItem: EncounterItem): Boolean {
-        return oldItem.identifier == newItem.identifier
+    override fun areItemsTheSame(oldItem: ContactItem, newItem: ContactItem): Boolean {
+        return oldItem.contact.ephId == newItem.contact.ephId
     }
 
-    override fun areContentsTheSame(oldItem: EncounterItem, newItem: EncounterItem): Boolean {
-        return oldItem == newItem
+    override fun areContentsTheSame(oldItem: ContactItem, newItem: ContactItem): Boolean {
+        return oldItem.contact.ephId == newItem.contact.ephId
     }
 }
 
-class EncounterListener(val clickListener: (itemId: EncounterItem) -> Unit) {
-    fun onClick(encounterItem: EncounterItem) = clickListener(encounterItem)
+class EncounterListener(val clickListener: (itemId: ContactItem) -> Unit) {
+    fun onClick(encounterItem: ContactItem) = clickListener(encounterItem)
 }
 

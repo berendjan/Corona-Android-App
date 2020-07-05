@@ -10,7 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/reports_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/marging_status_error">
 
         <TextView
             android:id="@+id/reports_card_title"
@@ -55,8 +56,8 @@
 
         <ImageView
             android:id="@+id/reports_card_status_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:scaleY="1.5"

@@ -4,13 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import com.smartphonesensing.corona.R
 import com.smartphonesensing.corona.databinding.HomeFragmentBinding
-import kotlin.random.Random
+import com.smartphonesensing.corona.util.DP3THelper
+import nl.tudelft.ipv8.android.IPv8Android
+import nl.tudelft.trustchain.common.util.TrustChainHelper
+import org.dpppt.android.sdk.internal.database.models.Handshake
 
 
 class HomeFragment : Fragment() {
@@ -32,7 +37,6 @@ class HomeFragment : Fragment() {
 
         setHeaderOpacityWithScroll()
 
-        binding.headerImage.setImageResource(viewModel.images[Random.nextInt(viewModel.images.size)])
 
         /** set LifeCycleOwner of binding to this fragment
          * can directly home_fragment.xml to viewModel LiveData object
@@ -40,6 +44,56 @@ class HomeFragment : Fragment() {
         binding.lifecycleOwner = this
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupStatusIcons()
+        DP3THelper.updateContactsFromDatabase()
+    }
+
+    private fun setupStatusIcons() {
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        val dp3t = sharedPreferences.getBoolean("pref_dp3t_tracing", true)
+        if (dp3t) {
+            view?.findViewById<ImageView>(R.id.encounters_card_status_icon)?.setImageResource(R.drawable.ic_check)
+            DP3THelper.database.getHandshakes { response: List<Handshake> ->
+                view?.findViewById<TextView>(R.id.encounters_card_status_text)?.text =
+                    getString(R.string.home_encounters_subtext_check, response.size , DP3THelper.contacts.value?.size ?: 0)
+            }
+        } else {
+            view?.findViewById<ImageView>(R.id.encounters_card_status_icon)?.setImageResource(R.drawable.ic_warning)
+            view?.findViewById<TextView>(R.id.encounters_card_status_text)?.text =
+                getString(R.string.home_encounters_subtext_warning)
+        }
+
+        val ipv8 = sharedPreferences.getBoolean("pref_ipv8_trustchain", true)
+        if (ipv8) {
+            val trustChainHelper = TrustChainHelper(IPv8Android.getInstance().getOverlay()!!)
+            view?.findViewById<ImageView>(R.id.trustchain_card_status_icon)?.setImageResource(R.drawable.ic_check)
+            view?.findViewById<TextView>(R.id.trustchain_card_status_text)?.text =
+                getString(R.string.home_trustchain_subtext_check,
+                    trustChainHelper.getPeers().size,
+                    trustChainHelper.getChainByUser(trustChainHelper.getMyPublicKey()).size)
+        } else {
+            view?.findViewById<ImageView>(R.id.trustchain_card_status_icon)?.setImageResource(R.drawable.ic_warning)
+            view?.findViewById<TextView>(R.id.trustchain_card_status_text)?.text =
+                getString(R.string.home_trustchain_subtext_warning)
+        }
+
+        val reports = DP3THelper.diagnosedContacts.value
+        if (reports?.isNotEmpty() == true) {
+            view?.findViewById<ImageView>(R.id.reports_card_status_icon)?.setImageResource(R.drawable.ic_warning)
+            view?.findViewById<TextView>(R.id.reports_card_status_text)?.text =
+                getString(R.string.home_reports_subtext_warning, reports.size, DP3THelper.getNumberOfDaysExposed())
+        } else {
+            view?.findViewById<ImageView>(R.id.reports_card_status_icon)?.setImageResource(R.drawable.ic_check)
+            view?.findViewById<TextView>(R.id.reports_card_status_text)?.text =
+                getString(R.string.home_reports_subtext_check)
+        }
+
     }
 
     private fun setHeaderOpacityWithScroll() {

@@ -10,6 +10,16 @@
     <string name="title_trustchain_blocks">Blocks</string>
 
 
+    <string name="home_encounters_subtext_check">Scanning, made %1$d digital handshakes with %2$d contacts!</string>
+    <string name="home_encounters_subtext_warning">DP3T proximity tracing is turned off in settings.</string>
+
+    <string name="home_reports_subtext_check">Nothing interesting to report!</string>
+    <string name="home_reports_subtext_warning">You have been in contact with a diagnosed person on %1$d occasions in the last %2$d days. Please quarantine yourself!</string>
+
+    <string name="home_trustchain_subtext_check">Trustchain P2P network enabled, you have %1$d peer(s) in the network and found %2$d blocks!</string>
+    <string name="home_trustchain_subtext_warning">Trustchain P2P network is turned off in settings.</string>
+
+
     <!-- Loading View: Erneut laden -->
     <string name="loading_view_reload">"Reload"</string>
 
@@ -360,7 +370,7 @@ Infoline Coronavirus
     <string name="onboarding_prinzip_title">"Staying one step ahead of the virus"</string>
 
     <!-- Onboarding Prinzip Text -->
-    <string name="onboarding_prinzip_text1">"By using the dp3t app, we can all help to contain the spread of the new coronavirus."</string>
+    <string name="onboarding_prinzip_text1">"By using the corona app, we can all help to contain the spread of the new coronavirus."</string>
 
     <!-- Onboarding Prinzip Text -->
     <string name="onboarding_prinzip_text2">"The app provides information on suspected infections. In this way, the chain of infection can be broken."</string>
@@ -739,7 +749,7 @@ Infoline Coronavirus
     <string name="inform_detail_faq2_title">"How do I remain anonymous?"</string>
 
     <!-- Inform Detail FAQ Text -->
-    <string name="inform_detail_faq2_text">"Only the temporary keys from your app are sent. No personal data. Other dp3t apps can then check if they have had an encounter with your app in the past few days. "</string>
+    <string name="inform_detail_faq2_text">"Only the temporary keys from your app are sent. No personal data. Other corona apps can then check if they have had an encounter with your app in the past few days. "</string>
 
     <!-- Informieren: Titel Tracing beendet -->
     <string name="inform_send_endtracing_title">"Tracing ended"</string>

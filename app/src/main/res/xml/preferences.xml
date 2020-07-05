@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
@@ -23,6 +23,22 @@
             app:summary="Send and receive digital handshakes via bluetooth"
             app:title="Enable tracing"
             app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:key="pref_dp3t_risk"
+            app:summary="Only show encounters with exposure risk"
+            app:title="Exposed encounters only"
+            app:defaultValue="false"/>
+
+        <SeekBarPreference
+            app:key="pref_dp3t_att"
+            app:summary="Maximum attenuation level for contacts for exposure risk"
+            app:title="Attenuation level"
+            android:max="150"
+            app:min="50"
+            app:showSeekBarValue="true"
+            app:defaultValue="85"/>
+
 
     </PreferenceCategory>
 

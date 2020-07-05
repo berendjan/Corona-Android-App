@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.smartphonesensing.corona.R
 import com.smartphonesensing.corona.databinding.EncountersFragmentBinding
@@ -28,6 +29,18 @@ class BlocksFragment : Fragment() {
     ): View? {
 
         binding = TrustchainBlocksFragmentBinding.inflate(inflater, container, false)
+
+        val adapter = BlocksAdapter(BlockListener ({clickedBlock ->
+            viewModel.updateSelectedBlock(clickedBlock)
+        }, {signBlock ->
+            viewModel.signBlock(signBlock)
+        } ))
+
+        binding.trustchainBlocksRecycler.adapter = adapter
+
+        viewModel.blocks.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+        })
 
         return binding.root
     }

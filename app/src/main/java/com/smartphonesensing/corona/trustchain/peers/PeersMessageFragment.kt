@@ -62,11 +62,6 @@ class PeersMessageFragment : Fragment() {
 
             val secretKeyList = DP3THelper.getSKList()
 
-//            val stringSKList: String = CoronaPayload(secretKeyList).serialize().toHex()
-//
-//            trustChainHelper.createDemoProposalBlock(stringSKList,
-//                viewModel.selectedPeer.value!!.peer.publicKey.keyToBin())
-
             trustChainHelper.createCoronaProposalBlock(secretKeyList,
                 viewModel.selectedPeer.value!!.peer.publicKey.keyToBin())
 

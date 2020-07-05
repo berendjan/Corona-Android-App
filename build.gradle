@@ -10,6 +10,7 @@ buildscript {
     ext.fragment_version = "1.2.2"
     ext.lifecycle_version = "2.2.0"
     ext.dokka_version = "0.10.1"
+    ext.worker_version = "2.3.4"
     repositories {
         google()
         jcenter()

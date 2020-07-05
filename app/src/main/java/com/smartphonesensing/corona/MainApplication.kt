@@ -1,30 +1,24 @@
 package com.smartphonesensing.corona
 
 import android.app.Application
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
-import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.preference.PreferenceManager
-import com.smartphonesensing.corona.storage.SecureStorage
-//import com.smartphonesensing.corona.trustchain.CoronaCommunity
-import com.smartphonesensing.corona.trustchain.CoronaPayload
-import com.smartphonesensing.corona.trustchain.MyMessage
+import androidx.work.*
 import com.smartphonesensing.corona.trustchain.TrustchainService
+import com.smartphonesensing.corona.util.ContactsCreationWorker
 import com.smartphonesensing.corona.util.DP3THelper
-import com.smartphonesensing.corona.util.NotificationUtil
 import com.squareup.sqldelight.android.AndroidSqliteDriver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import nl.tudelft.ipv8.IPv8Configuration
-import nl.tudelft.ipv8.Overlay
 import nl.tudelft.ipv8.OverlayConfiguration
-import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.android.IPv8Android
 import nl.tudelft.ipv8.android.keyvault.AndroidCryptoProvider
 import nl.tudelft.ipv8.android.messaging.bluetooth.BluetoothLeDiscovery
@@ -35,7 +29,6 @@ import nl.tudelft.ipv8.attestation.trustchain.store.TrustChainStore
 import nl.tudelft.ipv8.attestation.trustchain.validation.TransactionValidator
 import nl.tudelft.ipv8.keyvault.PrivateKey
 import nl.tudelft.ipv8.keyvault.defaultCryptoProvider
-import nl.tudelft.ipv8.messaging.Packet
 import nl.tudelft.ipv8.peerdiscovery.DiscoveryCommunity
 import nl.tudelft.ipv8.peerdiscovery.strategy.PeriodicSimilarity
 import nl.tudelft.ipv8.peerdiscovery.strategy.RandomChurn
@@ -43,21 +36,27 @@ import nl.tudelft.ipv8.peerdiscovery.strategy.RandomWalk
 import nl.tudelft.ipv8.sqldelight.Database
 import nl.tudelft.ipv8.util.hexToBytes
 import nl.tudelft.ipv8.util.toHex
+import nl.tudelft.trustchain.common.util.TrustChainHelper
 import okhttp3.CertificatePinner
-import okhttp3.internal.wait
 import org.dpppt.android.sdk.DP3T
 import org.dpppt.android.sdk.InfectionStatus
-import org.dpppt.android.sdk.internal.AppConfigManager
+import org.dpppt.android.sdk.internal.BluetoothAdvertiseMode
+import org.dpppt.android.sdk.internal.BluetoothTxPowerLevel
 import org.dpppt.android.sdk.internal.crypto.CryptoModule
+import org.dpppt.android.sdk.internal.crypto.SKList
 import org.dpppt.android.sdk.internal.database.models.ExposureDay
 import org.dpppt.android.sdk.internal.util.ProcessUtil
 import org.dpppt.android.sdk.util.SignatureUtil
+import java.util.concurrent.TimeUnit
 
 class MainApplication : Application() {
 
     val BUCKET_PUBLIC_KEY =
-        "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFdkxXZHVFWThqcnA4aWNSNEpVSlJaU0JkOFh2UgphR2FLeUg2VlFnTXV2Zk1JcmxrNk92QmtKeHdhbUdNRnFWYW9zOW11di9rWGhZdjF1a1p1R2RjREJBPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
-    val ACTION_GOTO_REPORTS = "ACTION_GOTO_REPORTS"
+        "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0" +
+        "FFdkxXZHVFWThqcnA4aWNSNEpVSlJaU0JkOFh2UgphR2FLeUg2VlFnTXV2Zk1JcmxrNk92QmtKeHdhbUdN" +
+        "RnFWYW9zOW11di9rWGhZdjF1a1p1R2RjREJBPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
+
+    private val applicationScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreate() {
         super.onCreate()
@@ -65,6 +64,29 @@ class MainApplication : Application() {
         initDP3T()
         initIPv8()
 
+        delayedInit()
+    }
+
+    private fun delayedInit() {
+        applicationScope.launch {
+            setupRecurringWork()
+        }
+    }
+
+    private fun setupRecurringWork() {
+        val createContactsWorkRequest =
+            PeriodicWorkRequestBuilder<ContactsCreationWorker>(
+                CryptoModule.MILLISECONDS_PER_EPOCH.toLong(), TimeUnit.MILLISECONDS,
+                5, TimeUnit.MINUTES)
+                .addTag(ContactsCreationWorker.WORK_NAME)
+                .build()
+
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniquePeriodicWork(
+                ContactsCreationWorker.WORK_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                createContactsWorkRequest
+            )
     }
 
     private fun initDP3T() {
@@ -73,14 +95,18 @@ class MainApplication : Application() {
             val publicKey = SignatureUtil.getPublicKeyFromBase64OrThrow(
                 BUCKET_PUBLIC_KEY
             )
-            DP3T.init(this, "com.smartphonesensing.corona", true, publicKey)
+            DP3T.init(this, "demo.dpppt.org", true, publicKey)
             val certificatePinner: CertificatePinner = CertificatePinner.Builder()
-                .add("com.smartphonesensing.corona", "sha256/YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg=")
+                .add("demo.dpppt.org", "sha256/YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg=")
                 .build()
             DP3T.setCertificatePinner(certificatePinner)
         }
         DP3THelper.setContext(this)
-        //demo.dpppt.org
+        DP3THelper.setupAppConfiguration(
+            attenuationThreshold = 100.0F,
+            bluetoothTxPowerLevel = BluetoothTxPowerLevel.ADVERTISE_TX_POWER_LOW,
+            bluetoothAdvertiseMode = BluetoothAdvertiseMode.ADVERTISE_MODE_BALANCED
+        )
     }
 
     private val contactUpdateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -88,7 +114,7 @@ class MainApplication : Application() {
             context: Context,
             intent: Intent
         ) {
-            val secureStorage: SecureStorage = SecureStorage.getInstance(context)!!
+//            val secureStorage: SecureStorage = SecureStorage.getInstance(context)!!
             val status = DP3T.getStatus(context)
             if (status.infectionStatus == InfectionStatus.EXPOSED) {
                 var exposureDay: ExposureDay? = null
@@ -99,44 +125,13 @@ class MainApplication : Application() {
                         dateNewest = day.exposedDate.startOfDayTimestamp
                     }
                 }
-                if (exposureDay != null && secureStorage.lastShownContactId != exposureDay.id) {
-                    createNewContactNotifaction(context, exposureDay.id)
-                }
+//                if (exposureDay != null && secureStorage.lastShownContactId != exposureDay.id) {
+//                    createNewContactNotifaction(context, exposureDay.id)
+//                }
             }
         }
     }
 
-    private fun createNewContactNotifaction(
-        context: Context,
-        contactId: Int
-    ) {
-        val secureStorage: SecureStorage = SecureStorage.getInstance(context)!!
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationUtil.createNotificationChannel(context)
-        }
-        val resultIntent = Intent(context, MainActivity::class.java)
-        resultIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-        resultIntent.action = ACTION_GOTO_REPORTS
-        val pendingIntent =
-            PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val notification = NotificationCompat.Builder(
-            context,
-            NotificationUtil.NOTIFICATION_CHANNEL_ID
-        )
-            .setContentTitle(context.getString(R.string.push_exposed_title))
-            .setContentText(context.getString(R.string.push_exposed_text))
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setSmallIcon(R.drawable.ic_begegnungen)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build()
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NotificationUtil.NOTIFICATION_ID_CONTACT, notification)
-        secureStorage.isHotlineCallPending = true
-        secureStorage.isReportsHeaderAnimationPending = true
-        secureStorage.lastShownContactId = contactId
-    }
 
     private fun initIPv8() {
 
@@ -160,6 +155,7 @@ class MainApplication : Application() {
 
         val ipv8 = IPv8Android.getInstance()
         val trustchain = ipv8.getOverlay<TrustChainCommunity>()!!
+        val trustChainHelper: TrustChainHelper = TrustChainHelper(trustchain)
 
         /**
          * Step 2: Proposal block validator
@@ -173,7 +169,7 @@ class MainApplication : Application() {
          * In our case, we require proposal blocks to include a message field. We accept any transaction
          * for agreement blocks as we are only concerned with the signature.
          */
-        trustchain.registerTransactionValidator(DEMO_BLOCK_TYPE, object : TransactionValidator {
+        trustchain.registerTransactionValidator(CORONA_BLOCK_TYPE, object : TransactionValidator {
             override fun validate(
                 block: TrustChainBlock,
                 database: TrustChainStore
@@ -196,7 +192,7 @@ class MainApplication : Application() {
          *
          * Right now it signs all valid blocks with simple transaction
          */
-        trustchain.registerBlockSigner(DEMO_BLOCK_TYPE, object : BlockSigner {
+        trustchain.registerBlockSigner(CORONA_BLOCK_TYPE, object : BlockSigner {
             override fun onSignatureRequest(block: TrustChainBlock) {
                 Log.d("CoronaChain", "Create agreement block for incoming block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
 //                val tx = mapOf<Any?, Any?>("messageKey2" to "messageValue2")
@@ -218,9 +214,15 @@ class MainApplication : Application() {
          * param 1 : block type to listen to
          * param 2 : object implementing BlockListener interface
          */
-        trustchain.addListener(DEMO_BLOCK_TYPE, object : BlockListener {
+        trustchain.addListener(CORONA_BLOCK_TYPE, object : BlockListener {
             override fun onBlockReceived(block: TrustChainBlock) {
                 Log.d("CoronaChain", "listener called for action on block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
+
+                if (block.isAgreement) {
+                    val stringSKList = block.transaction["SKList"] as ArrayList<Map<String, String>>
+                    val SKList: SKList = trustChainHelper.stringSKListToSKList(stringSKList)
+                    DP3THelper.checkContactsForSKList(SKList)
+                }
             }
         })
 

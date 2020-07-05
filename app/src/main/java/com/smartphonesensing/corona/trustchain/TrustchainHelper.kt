@@ -1,6 +1,8 @@
 package nl.tudelft.trustchain.common.util
 
 import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.smartphonesensing.corona.trustchain.CoronaPayload
 import com.smartphonesensing.corona.trustchain.MyMessage
 import nl.tudelft.ipv8.Peer
@@ -99,6 +101,8 @@ class TrustChainHelper(
         return trustChainCommunity.createAgreementBlock(link, transaction)
     }
 
+
+
     /**
      * Returns a list of blocks in which the specified user is participating as a sender or
      * a receiver.
@@ -174,13 +178,23 @@ class TrustChainHelper(
     fun createCoronaProposalBlock(
         SKList: SKList,
         publicKey: ByteArray,
-        blockType: String = DEMO_BLOCK_TYPE
+        blockType: String = CORONA_BLOCK_TYPE
     ): TrustChainBlock {
 
         val transaction = mapOf(
             "SKList" to SKListToStringSKList(SKList)
         )
         return trustChainCommunity.createProposalBlock(blockType, transaction, publicKey)
+    }
+
+    /**
+     * Sign and create agreement block
+     */
+    fun createCoronaAgreementBlock(
+        link: TrustChainBlock,
+        transaction: TrustChainTransaction
+    ): TrustChainBlock {
+        return trustChainCommunity.createAgreementBlock(link, transaction)
     }
 
     private fun SKListToStringSKList(SKList: SKList) : ArrayList<Map<String, String>> {
@@ -191,7 +205,7 @@ class TrustChainHelper(
         return stringSKList
     }
 
-    private fun stringSKListToSKList(stringSKList: ArrayList<Map<String, String>>) : SKList {
+    fun stringSKListToSKList(stringSKList: ArrayList<Map<String, String>>) : SKList {
         val SKList = SKList()
         for (pair: Map<String, String> in stringSKList) {
             for ((key : String, value : String) in pair) {
@@ -217,6 +231,5 @@ class TrustChainHelper(
         const val EMPTY_CRAWL_RESPONSE = 7
         const val STRING_MESSAGE = 8
         const val CORONA_PACKET = 9
-        const val GENERAL_PACKET = 10
     }
 }

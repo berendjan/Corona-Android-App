@@ -6,142 +6,148 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.smartphonesensing.corona.util.DP3THelper
 import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import nl.tudelft.ipv8.util.toHex
+import org.dpppt.android.sdk.internal.database.models.Contact
 import org.dpppt.android.sdk.internal.database.models.Handshake
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.math.ceil
 
 class EncountersViewModel : ViewModel() {
 
     private val MAX_NUMBER_OF_MISSING_HANDSHAKES = 3
 
-    private val _encountersList = MutableLiveData<List<EncounterItem>>()
-    val encountersList: LiveData<List<EncounterItem>>
+    private val _encountersList = MutableLiveData<List<ContactItem>>()
+    val encountersList: LiveData<List<ContactItem>>
         get() = _encountersList
+
+    private val _encounterSelected = MutableLiveData<ContactItem>()
+    val encounterSelected: LiveData<ContactItem>
+        get() = _encounterSelected
+
+    private val _contactsList = MutableLiveData<List<Contact>>()
+    val contactsList: LiveData<List<Contact>>
+        get() = _contactsList
 
     var scanInterval: Long = 0
     var scanDuration: Long = 0
 
-    fun updateEncountersList(handshakes: List<Handshake>) {
+    fun updateEncountersList(handshakes: List<Handshake>, riskyHandshakesOnly: Boolean) {
 
-        _encountersList.value = mergeHandshakes(handshakes)
+        _encountersList.value = mergeHandshakes(handshakes, riskyHandshakesOnly)
 
     }
 
-    private fun mergeHandshakes(handshakes: List<Handshake>): List<EncounterItem> {
+    fun updateContactsList(contacts: List<Contact>) {
 
-        val groupedHandshakes = HashMap<String, MutableList<Handshake>?>()
+        _contactsList.value = contacts
 
-        val sdf = SimpleDateFormat("dd.MM HH:mm:ss")
+    }
 
-        for (handshake in handshakes) {
-            val head = ByteArray(4)
-            for (i in 0..3) {
-                head[i] = handshake.ephId.data[i]
-            }
-            val identifier = head.toHex()
-            if (!groupedHandshakes.containsKey(identifier)) {
-                groupedHandshakes[identifier] = java.util.ArrayList()
-            }
-            groupedHandshakes[identifier]!!.add(handshake)
-        }
+    private fun mergeHandshakes(handshakes: List<Handshake>, riskyHandshakesOnly: Boolean): List<ContactItem> {
 
-        val result: MutableList<EncounterItem> = java.util.ArrayList()
+        var contacts: List<ContactItem> = DP3THelper.mergeHandshakesToContacts(handshakes, riskyHandshakesOnly)
 
-        for ((key, value) in groupedHandshakes) {
-            value?.sortWith(kotlin.Comparator { h1: Handshake, h2: Handshake ->
-                h1.timestamp.compareTo(h2.timestamp)
-            })
-            var start = 0
-            var end = 1
-            while (end < value!!.size) {
-                if (value[end].timestamp - value[end - 1].timestamp >
-                    MAX_NUMBER_OF_MISSING_HANDSHAKES * scanInterval
-                ) {
-                    val interval = EncounterItem()
-                    interval.identifier = key
-                    interval.starttime = value[start].timestamp
-                    interval.endtime = value[end - 1].timestamp
-
-                    interval.dateTimeStart = sdf.format(Date(interval.starttime))
-                    interval.dateTimeEnd = sdf.format(Date(interval.endtime))
-
-                    interval.handshakes.add(value[end - 1])
-
-                    interval.count = end - start
-                    interval.expectedCount = 1 + ceil((interval.endtime - interval.starttime) *
-                            1.0 / scanInterval).toInt() * (scanDuration.toInt() / 5120)
-                    result.add(interval)
-                    start = end
-                }
-                end++
-            }
-            val interval = EncounterItem()
-            interval.identifier = key
-            interval.starttime = value[start].timestamp
-            interval.endtime = value[end - 1].timestamp
-
-            interval.handshakes.add(value[end - 1])
-
-            interval.dateTimeStart = sdf.format(Date(interval.starttime))
-            interval.dateTimeEnd = sdf.format(Date(interval.endtime))
-
-            interval.count = end - start
-            interval.expectedCount = 1 + ceil((interval.endtime - interval.starttime) *
-                    1.0 / scanInterval).toInt() * (scanDuration.toInt() / 5120)
-            result.add(interval)
-        }
-        result.sortWith(kotlin.Comparator { h1: EncounterItem, h2: EncounterItem ->
-            h2.endtime.compareTo(h1.endtime)
+        return contacts.sortedWith(kotlin.Comparator { c1: ContactItem, c2: ContactItem ->
+            c1.endtime.compareTo(c2.endtime)
         })
-        return result
+
+//        val sdf = SimpleDateFormat("dd.MM HH:mm:ss")
+
+//        val result: MutableList<EncounterItem> = java.util.ArrayList()
+//
+//        for (contact in contacts) {
+//            value?.sortWith(kotlin.Comparator { h1: Handshake, h2: Handshake ->
+//                h1.timestamp.compareTo(h2.timestamp)
+//            })
+//            var start = 0
+//            var end = 1
+//            while (end < value!!.size) {
+//                if (value[end].timestamp - value[end - 1].timestamp >
+//                    MAX_NUMBER_OF_MISSING_HANDSHAKES * scanInterval
+//                ) {
+//                    val interval = EncounterItem()
+//                    interval.identifier = key
+//                    interval.starttime = value[start].timestamp
+//                    interval.endtime = value[end - 1].timestamp
+//
+//                    interval.dateTimeStart = sdf.format(Date(interval.starttime))
+//                    interval.dateTimeEnd = sdf.format(Date(interval.endtime))
+//
+//                    interval.handshakes.add(value[end - 1])
+//
+//                    interval.count = end - start
+//                    interval.expectedCount = 1 + ceil((interval.endtime - interval.starttime) *
+//                            1.0 / scanInterval).toInt() * (scanDuration.toInt() / 5120)
+//                    result.add(interval)
+//                    start = end
+//                }
+//                end++
+//            }
+//            val interval = EncounterItem()
+//            interval.identifier = key
+//            interval.starttime = value[start].timestamp
+//            interval.endtime = value[end - 1].timestamp
+//
+//            interval.handshakes.add(value[end - 1])
+//
+//            interval.dateTimeStart = sdf.format(Date(interval.starttime))
+//            interval.dateTimeEnd = sdf.format(Date(interval.endtime))
+//
+//            interval.count = end - start
+//            interval.expectedCount = 1 + ceil((interval.endtime - interval.starttime) *
+//                    1.0 / scanInterval).toInt() * (scanDuration.toInt() / 5120)
+//            result.add(interval)
+//        }
+//        result.sortWith(kotlin.Comparator { h1: EncounterItem, h2: EncounterItem ->
+//            h2.endtime.compareTo(h1.endtime)
+//        })
+//        return result
     }
 
-    fun onEncounterClicked(encounterItem: EncounterItem) {
-        Log.i("Handshakes", encounterItem.handshakes.toString())
+    fun onEncounterClicked(encounterItem: ContactItem) {
+        _encounterSelected.value = encounterItem
     }
 
 }
 
 
-data class User(var uid: String, var upcomingEvents: List<MutableMap<String, Any>>) :
-    Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString() ?: "",
-        readUpcomingEvents(parcel)
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(uid)
-        parcel.writeList(upcomingEvents)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<User> {
-        override fun createFromParcel(parcel: Parcel): User {
-            return User(parcel)
-        }
-
-        override fun newArray(size: Int): Array<User?> {
-            return arrayOfNulls(size)
-        }
-
-        private fun readUpcomingEvents(parcel: Parcel): List<MutableMap<String, Any>> {
-            val list = mutableListOf<MutableMap<String, Any>>()
-            parcel.readList(list as List<*>, MutableMap::class.java.classLoader)
-
-            return list
-        }
-    }
-}
+//data class User(var uid: String, var upcomingEvents: List<MutableMap<String, Any>>) :
+//    Parcelable {
+//    constructor(parcel: Parcel) : this(
+//        parcel.readString() ?: "",
+//        readUpcomingEvents(parcel)
+//    )
+//
+//    override fun writeToParcel(parcel: Parcel, flags: Int) {
+//        parcel.writeString(uid)
+//        parcel.writeList(upcomingEvents)
+//    }
+//
+//    override fun describeContents(): Int {
+//        return 0
+//    }
+//
+//    companion object CREATOR : Parcelable.Creator<User> {
+//        override fun createFromParcel(parcel: Parcel): User {
+//            return User(parcel)
+//        }
+//
+//        override fun newArray(size: Int): Array<User?> {
+//            return arrayOfNulls(size)
+//        }
+//
+//        private fun readUpcomingEvents(parcel: Parcel): List<MutableMap<String, Any>> {
+//            val list = mutableListOf<MutableMap<String, Any>>()
+//            parcel.readList(list as List<*>, MutableMap::class.java.classLoader)
+//
+//            return list
+//        }
+//    }
+//}
 
 @Parcelize
 class EncounterItem (
@@ -192,3 +198,20 @@ class EncounterItem (
     }
 }
 
+class ContactItem (
+    val contact: Contact,
+    val starttime: Long,
+    val endtime: Long,
+    val handshakes: List<Handshake>,
+    val avgRSSI : Double,
+    val avgTxPowerLevel : Double,
+    val avgAttenuationLevel: Double
+) {
+    val sdf = SimpleDateFormat("dd.MM HH:mm:ss")
+    val starttimeString : String = sdf.format(Date(starttime))
+    val endtimeString : String = sdf.format(Date(endtime))
+    val identifier: String = contact.ephId.data.toHex()
+    val avgRSSIInt: Int = avgRSSI.toInt()
+    val avgTxPowerLevelInt: Int = avgTxPowerLevel.toInt()
+    val avgAttenuationLevelInt: Int = avgAttenuationLevel.toInt()
+}

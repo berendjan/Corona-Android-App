@@ -7,7 +7,7 @@
     <data>
         <variable
             name="encounter"
-            type="com.smartphonesensing.corona.encounters.EncounterItem" />
+            type="com.smartphonesensing.corona.encounters.ContactItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,14 +40,82 @@
         </androidx.appcompat.widget.Toolbar>
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EphId"
+            android:layout_marginBottom="@dimen/marging_status_error"
+            app:layout_constraintBottom_toTopOf="@id/encounter_id_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <TextView
             android:id="@+id/encounter_id_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{encounter.identifier}"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/header_height"/>
+
+        <TextView
+            android:id="@+id/avg_rssi_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Average RSSI value"
+            android:layout_marginTop="@dimen/marging_status_error"
+            app:layout_constraintTop_toBottomOf="@id/encounter_id_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/avg_rssi_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(encounter.avgRSSIInt)}"
+            android:layout_marginTop="@dimen/marging_status_error"
+            app:layout_constraintTop_toBottomOf="@id/avg_rssi_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/avg_attenuation_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Average attenuation value"
+            android:layout_marginTop="@dimen/marging_status_error"
+            app:layout_constraintTop_toBottomOf="@id/avg_rssi_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/avg_attenuation_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(encounter.avgAttenuationLevelInt)}"
+            android:layout_marginTop="@dimen/marging_status_error"
+            app:layout_constraintTop_toBottomOf="@id/avg_attenuation_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/avg_txPower_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Average transaction power level"
+            android:layout_marginTop="@dimen/marging_status_error"
+            app:layout_constraintTop_toBottomOf="@id/avg_attenuation_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/avg_txPower_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{String.valueOf(encounter.avgTxPowerLevelInt)}"
+            android:layout_marginTop="@dimen/marging_status_error"
+            app:layout_constraintTop_toBottomOf="@id/avg_txPower_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

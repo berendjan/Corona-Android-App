@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
-            name="encounterItem"
-            type="com.smartphonesensing.corona.encounters.ContactItem"/>
+            name="report"
+            type="com.smartphonesensing.corona.reports.ReportItem"/>
 
         <variable
             name="clickListener"
-            type="com.smartphonesensing.corona.encounters.EncounterListener"/>
+            type="com.smartphonesensing.corona.reports.ReportsListener"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> clickListener.onClick(encounterItem)}">
+        android:onClick="@{() -> clickListener.onClick(report)}">
 
         <ImageView
             android:id="@+id/encounters_list_item_image"
@@ -26,20 +25,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:src="@drawable/ic_handshakes"
-            android:tint="@color/status_purple"
+            android:src="@drawable/ic_warning"
+            android:tint="@color/green_main"
             android:layout_marginStart="@dimen/marging_status_error"/>
 
-        <ImageView
-            android:id="@+id/encounters_list_item_chevron"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_chevron_right"
-            android:tint="@color/status_purple"
-            android:layout_marginTop="@dimen/marging_status_error"
-            android:layout_marginEnd="@dimen/marging_status_error"/>
+<!--        <ImageView-->
+<!--            android:id="@+id/encounters_list_item_chevron"-->
+<!--            android:layout_width="40dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            android:src="@drawable/ic_chevron_right"-->
+<!--            android:tint="@color/green_main"-->
+<!--            android:layout_marginTop="@dimen/marging_status_error"-->
+<!--            android:layout_marginEnd="@dimen/marging_status_error"/>-->
 
         <TextView
             android:id="@+id/encounters_list_item_identifier"
@@ -49,23 +48,11 @@
             android:layout_marginStart="@dimen/marging_status_error"
             android:layout_marginTop="@dimen/marging_status_error"
             android:layout_marginEnd="@dimen/marging_status_error"
-            android:text="@{encounterItem.identifier}"
-            app:layout_constraintEnd_toStartOf="@id/encounters_list_item_avg_att_value"
+            android:text="@{report.identifier}"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/encounters_list_item_image"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/encounters_list_item_avg_att_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/encounters_list_item_identifier"
-            app:layout_constraintEnd_toStartOf="@id/encounters_list_item_chevron"
-            style="@style/CoronaAppTheme.Text"
-            android:text="@{String.valueOf(encounterItem.avgAttenuationLevelInt)}"
-            android:layout_marginEnd="@dimen/marging_status_error"
-            android:layout_marginStart="@dimen/marging_status_error"
-            android:layout_marginTop="@dimen/marging_status_error"/>
 
         <TextView
             android:id="@+id/encounters_list_item_start"
@@ -76,7 +63,7 @@
             app:layout_constraintEnd_toStartOf="@id/encounters_list_item_end"
             app:layout_constraintBottom_toBottomOf="parent"
             style="@style/CoronaAppTheme.Text"
-            android:text="@{encounterItem.starttimeString}"
+            android:text="@{report.dateString}"
             android:layout_marginEnd="@dimen/marging_status_error"
             android:layout_marginStart="@dimen/marging_status_error"
             android:layout_marginTop="@dimen/marging_status_error"
@@ -88,9 +75,9 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/encounters_list_item_identifier"
             app:layout_constraintStart_toEndOf="@id/encounters_list_item_start"
-            app:layout_constraintEnd_toEndOf="@id/encounters_list_item_avg_att_value"
+            app:layout_constraintEnd_toEndOf="@id/encounters_list_item_identifier"
             style="@style/CoronaAppTheme.Text"
-            android:text="@{encounterItem.endtimeString}"
+            android:text="@{report.count}"
             android:layout_marginStart="@dimen/marging_status_error"
             android:layout_marginTop="@dimen/marging_status_error"/>
 

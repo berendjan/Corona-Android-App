@@ -4,18 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TabHost.OnTabChangeListener
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.smartphonesensing.corona.R
 import com.smartphonesensing.corona.databinding.TrustchainFragmentBinding
 import com.smartphonesensing.corona.trustchain.blocks.BlocksFragment
 import com.smartphonesensing.corona.trustchain.peers.PeersFragment
+import com.google.android.material.tabs.TabLayoutMediator
 
 
 class TrustchainFragment : Fragment() {
@@ -35,27 +33,22 @@ class TrustchainFragment : Fragment() {
 
         binding = TrustchainFragmentBinding.inflate(inflater, container, false)
 
-        binding.trustchainPager.adapter = TrustchainPagerAdapter(requireActivity())
+        val adapter =  TrustchainPagerAdapter(requireActivity())
 
-        setupTabBar()
+        binding.trustchainPager.adapter = adapter
 
         return binding.root
     }
 
-    private fun setupTabBar() {
-        val tabLayout = binding.trustchainTabLayout
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.title_trustchain_peers))
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.title_trustchain_blocks))
-        tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    binding.trustchainPager.currentItem = tab.position
-                }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab) { }
-            override fun onTabReselected(tab: TabLayout.Tab) { }
-        })
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val tabTitles = arrayListOf(
+            getString(R.string.title_trustchain_peers),
+            getString(R.string.title_trustchain_blocks)
+        )
+        TabLayoutMediator(binding.trustchainTabLayout, binding.trustchainPager) {
+            tab, position -> tab.text = tabTitles[position]
+        }.attach()
     }
 
 }
@@ -73,5 +66,6 @@ class TrustchainPagerAdapter(fragmentActivity: FragmentActivity) :
             else -> BlocksFragment.newInstance()
         }
     }
+
 
 }
