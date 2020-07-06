@@ -12,6 +12,7 @@ import com.smartphonesensing.corona.encounters.ContactItem
 import com.smartphonesensing.corona.storage.SecureStorage
 import org.dpppt.android.sdk.internal.AppConfigManager
 import org.dpppt.android.sdk.internal.BluetoothAdvertiseMode
+import org.dpppt.android.sdk.internal.BluetoothScanMode
 import org.dpppt.android.sdk.internal.BluetoothTxPowerLevel
 import org.dpppt.android.sdk.internal.backend.BackendBucketRepository
 import org.dpppt.android.sdk.internal.backend.models.ExposeeRequest
@@ -82,12 +83,12 @@ object DP3THelper {
     }
 
     fun setupAppConfiguration(
-        attenuationThreshold: Float,
         bluetoothTxPowerLevel: BluetoothTxPowerLevel,
-        bluetoothAdvertiseMode: BluetoothAdvertiseMode) {
-        setAttenuationLevel(attenuationThreshold)
+        bluetoothAdvertiseMode: BluetoothAdvertiseMode,
+        bluetoothScanMode: BluetoothScanMode) {
         appConfigManager.setBluetoothPowerLevel(bluetoothTxPowerLevel)
         appConfigManager.bluetoothAdvertiseMode = bluetoothAdvertiseMode
+        appConfigManager.bluetoothScanMode = bluetoothScanMode
     }
 
     fun setAttenuationLevel(attenuationThreshold: Float) {

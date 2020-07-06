@@ -41,6 +41,7 @@ import okhttp3.CertificatePinner
 import org.dpppt.android.sdk.DP3T
 import org.dpppt.android.sdk.InfectionStatus
 import org.dpppt.android.sdk.internal.BluetoothAdvertiseMode
+import org.dpppt.android.sdk.internal.BluetoothScanMode
 import org.dpppt.android.sdk.internal.BluetoothTxPowerLevel
 import org.dpppt.android.sdk.internal.crypto.CryptoModule
 import org.dpppt.android.sdk.internal.crypto.SKList
@@ -108,9 +109,9 @@ class MainApplication : Application() {
         }
         DP3THelper.setContext(this)
         DP3THelper.setupAppConfiguration(
-            attenuationThreshold = 100.0F,
             bluetoothTxPowerLevel = BluetoothTxPowerLevel.ADVERTISE_TX_POWER_LOW,
-            bluetoothAdvertiseMode = BluetoothAdvertiseMode.ADVERTISE_MODE_BALANCED
+            bluetoothAdvertiseMode = BluetoothAdvertiseMode.ADVERTISE_MODE_BALANCED,
+            bluetoothScanMode = BluetoothScanMode.SCAN_MODE_BALANCED
         )
     }
 
