@@ -46,7 +46,10 @@ class ItemDiffCallback : DiffUtil.ItemCallback<ContactItem>() {
     }
 
     override fun areContentsTheSame(oldItem: ContactItem, newItem: ContactItem): Boolean {
-        return oldItem.contact.ephId == newItem.contact.ephId
+        return oldItem.contact.ephId == newItem.contact.ephId &&
+                oldItem.avgAttenuationLevelInt == newItem.avgAttenuationLevelInt &&
+                oldItem.starttimeString == newItem.starttimeString &&
+                oldItem.endtimeString == newItem.endtimeString
     }
 }
 

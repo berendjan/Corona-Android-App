@@ -223,7 +223,7 @@ class MainApplication : Application() {
             override fun onBlockReceived(block: TrustChainBlock) {
                 Log.d("CoronaChain", "listener called for action on block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
 
-                trustChainHelper.updateBlocks()
+//                trustChainHelper.updateBlocks()
 
                 val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
                 val healthOfficial = sharedPreferences.getString("pref_ipv8_health_official", null)

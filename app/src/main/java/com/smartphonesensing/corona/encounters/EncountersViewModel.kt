@@ -48,63 +48,11 @@ class EncountersViewModel : ViewModel() {
 
     private fun mergeHandshakes(handshakes: List<Handshake>, riskyHandshakesOnly: Boolean): List<ContactItem> {
 
-        var contacts: List<ContactItem> = DP3THelper.mergeHandshakesToContacts(handshakes, riskyHandshakesOnly)
+        val contacts: List<ContactItem> = DP3THelper.mergeHandshakesToContacts(handshakes, riskyHandshakesOnly)
 
         return contacts.sortedWith(kotlin.Comparator { c1: ContactItem, c2: ContactItem ->
             c1.endtime.compareTo(c2.endtime)
         })
-
-//        val sdf = SimpleDateFormat("dd.MM HH:mm:ss")
-
-//        val result: MutableList<EncounterItem> = java.util.ArrayList()
-//
-//        for (contact in contacts) {
-//            value?.sortWith(kotlin.Comparator { h1: Handshake, h2: Handshake ->
-//                h1.timestamp.compareTo(h2.timestamp)
-//            })
-//            var start = 0
-//            var end = 1
-//            while (end < value!!.size) {
-//                if (value[end].timestamp - value[end - 1].timestamp >
-//                    MAX_NUMBER_OF_MISSING_HANDSHAKES * scanInterval
-//                ) {
-//                    val interval = EncounterItem()
-//                    interval.identifier = key
-//                    interval.starttime = value[start].timestamp
-//                    interval.endtime = value[end - 1].timestamp
-//
-//                    interval.dateTimeStart = sdf.format(Date(interval.starttime))
-//                    interval.dateTimeEnd = sdf.format(Date(interval.endtime))
-//
-//                    interval.handshakes.add(value[end - 1])
-//
-//                    interval.count = end - start
-//                    interval.expectedCount = 1 + ceil((interval.endtime - interval.starttime) *
-//                            1.0 / scanInterval).toInt() * (scanDuration.toInt() / 5120)
-//                    result.add(interval)
-//                    start = end
-//                }
-//                end++
-//            }
-//            val interval = EncounterItem()
-//            interval.identifier = key
-//            interval.starttime = value[start].timestamp
-//            interval.endtime = value[end - 1].timestamp
-//
-//            interval.handshakes.add(value[end - 1])
-//
-//            interval.dateTimeStart = sdf.format(Date(interval.starttime))
-//            interval.dateTimeEnd = sdf.format(Date(interval.endtime))
-//
-//            interval.count = end - start
-//            interval.expectedCount = 1 + ceil((interval.endtime - interval.starttime) *
-//                    1.0 / scanInterval).toInt() * (scanDuration.toInt() / 5120)
-//            result.add(interval)
-//        }
-//        result.sortWith(kotlin.Comparator { h1: EncounterItem, h2: EncounterItem ->
-//            h2.endtime.compareTo(h1.endtime)
-//        })
-//        return result
     }
 
     fun onEncounterClicked(encounterItem: ContactItem) {
@@ -113,40 +61,6 @@ class EncountersViewModel : ViewModel() {
 
 }
 
-
-//data class User(var uid: String, var upcomingEvents: List<MutableMap<String, Any>>) :
-//    Parcelable {
-//    constructor(parcel: Parcel) : this(
-//        parcel.readString() ?: "",
-//        readUpcomingEvents(parcel)
-//    )
-//
-//    override fun writeToParcel(parcel: Parcel, flags: Int) {
-//        parcel.writeString(uid)
-//        parcel.writeList(upcomingEvents)
-//    }
-//
-//    override fun describeContents(): Int {
-//        return 0
-//    }
-//
-//    companion object CREATOR : Parcelable.Creator<User> {
-//        override fun createFromParcel(parcel: Parcel): User {
-//            return User(parcel)
-//        }
-//
-//        override fun newArray(size: Int): Array<User?> {
-//            return arrayOfNulls(size)
-//        }
-//
-//        private fun readUpcomingEvents(parcel: Parcel): List<MutableMap<String, Any>> {
-//            val list = mutableListOf<MutableMap<String, Any>>()
-//            parcel.readList(list as List<*>, MutableMap::class.java.classLoader)
-//
-//            return list
-//        }
-//    }
-//}
 
 @Parcelize
 class EncounterItem (

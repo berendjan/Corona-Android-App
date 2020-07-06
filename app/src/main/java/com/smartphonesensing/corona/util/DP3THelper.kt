@@ -29,7 +29,7 @@ import java.util.*
 
 object DP3THelper {
 
-    private const val NUMBER_OF_DAYS_EXPOSED = 10
+    private const val NUMBER_OF_DAYS_EXPOSED = 2
 
     private const val WINDOW_DURATION = 5 * 60 * 1000L
 

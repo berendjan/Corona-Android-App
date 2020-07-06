@@ -1,11 +1,14 @@
 package nl.tudelft.trustchain.common.util
 
+import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.preference.PreferenceManager
 import com.smartphonesensing.corona.trustchain.CoronaPayload
 import com.smartphonesensing.corona.trustchain.MyMessage
 import com.smartphonesensing.corona.trustchain.peers.PeerListItem
+import kotlinx.coroutines.CoroutineScope
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -63,6 +66,23 @@ class TrustChainHelper(
     suspend fun crawlChain(peer: Peer) {
         trustChainCommunity.crawlChain(peer)
     }
+
+    /**
+     * Crawl chain of health official
+     */
+    suspend fun crawlChainHealthOfficial(context: Context) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val healthOfficial = sharedPreferences.getString("pref_ipv8_health_official", null)
+        healthOfficial?.let {
+            if (healthOfficial != getMyPublicKey().toHex()) {
+                val peer = getPeerByPublicKeyBin(healthOfficial.hexToBytes())
+                peer?.let {
+                    crawlChain(peer)
+                }
+            }
+        }
+    }
+
 
 
 //    /**
