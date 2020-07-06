@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import com.smartphonesensing.corona.R
 import com.smartphonesensing.corona.encounters.ContactItem
 import com.smartphonesensing.corona.storage.SecureStorage
+import kotlinx.coroutines.CoroutineScope
 import org.dpppt.android.sdk.internal.AppConfigManager
 import org.dpppt.android.sdk.internal.BluetoothAdvertiseMode
 import org.dpppt.android.sdk.internal.BluetoothScanMode
@@ -35,7 +36,10 @@ object DP3THelper {
 
     private lateinit var context: Context
 
+
     private val _diagnosedContacts = MutableLiveData<List<Contact>>()
+
+
     val diagnosedContacts: LiveData<List<Contact>>
         get() = _diagnosedContacts
 

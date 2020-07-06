@@ -58,6 +58,7 @@ class MainApplication : Application() {
         "RnFWYW9zOW11di9rWGhZdjF1a1p1R2RjREJBPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
 
     private val applicationScope = CoroutineScope(Dispatchers.Default)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate() {
         super.onCreate()
@@ -232,7 +233,10 @@ class MainApplication : Application() {
                         val stringSKList: ArrayList<Map<String, String>> =
                             block.transaction["SKList"] as ArrayList<Map<String, String>>
                         val SKList: SKList = trustChainHelper.stringSKListToSKList(stringSKList)
-                        DP3THelper.checkContactsForSKList(SKList)
+
+                        mainScope.launch {
+                            DP3THelper.checkContactsForSKList(SKList)
+                        }
                     }
                 }
             }
