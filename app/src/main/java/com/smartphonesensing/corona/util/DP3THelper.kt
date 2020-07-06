@@ -89,6 +89,7 @@ object DP3THelper {
         appConfigManager.setBluetoothPowerLevel(bluetoothTxPowerLevel)
         appConfigManager.bluetoothAdvertiseMode = bluetoothAdvertiseMode
         appConfigManager.bluetoothScanMode = bluetoothScanMode
+        setAttenuationLevel(85.0f)
     }
 
     fun setAttenuationLevel(attenuationThreshold: Float) {
