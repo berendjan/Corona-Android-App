@@ -5,6 +5,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import nl.tudelft.ipv8.Peer
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PeersViewModel : ViewModel() {
 
@@ -41,7 +43,8 @@ class PeersViewModel : ViewModel() {
 }
 
 class PeerListItem(val peer: Peer) {
-    val text = peer.address.ip
+    val sdf = SimpleDateFormat("dd.MM HH:mm:ss")
+    val text = peer.lastResponse?.let {"Last activity: ${sdf.format(peer.lastResponse!!)}"} ?: "No last activity"
     val toPeerString = "To peer:\n" + peer.mid
 }
 
