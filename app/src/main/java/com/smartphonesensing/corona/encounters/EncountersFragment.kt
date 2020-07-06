@@ -41,8 +41,6 @@ class EncountersFragment : Fragment() {
         })
         binding.encountersRecycler.adapter = adapter
 
-        DP3THelper.updateContactsFromDatabase()
-
         loadHandshakes()
 
         viewModel.encountersList.observe(viewLifecycleOwner, Observer {

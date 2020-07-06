@@ -39,10 +39,6 @@ object DP3THelper {
     val diagnosedContacts: LiveData<List<Contact>>
         get() = _diagnosedContacts
 
-    private val _contacts = MutableLiveData<List<Contact>>()
-    val contacts: LiveData<List<Contact>>
-        get() = _contacts
-
     fun setContext(c: Context) {
         context = c
     }
@@ -98,12 +94,6 @@ object DP3THelper {
 
     fun generateContactsForHandshakes() {
         database.generateContactsFromHandshakes(context)
-    }
-
-    fun updateContactsFromDatabase() {
-        if (database.contacts.size > 0) {
-            _contacts.value = database.contacts
-        }
     }
 
     fun mergeHandshakesToContacts(handshakes: List<Handshake>, riskyContactsOnly: Boolean) : List<ContactItem> {
@@ -206,8 +196,6 @@ object DP3THelper {
 
     fun checkContactsForSKList(SKList: SKList) {
         generateContactsForHandshakes()
-
-        updateContactsFromDatabase()
 
         val newDiagnosedContacts : MutableList<Contact> = mutableListOf()
         for (pair : android.util.Pair<DayDate, ByteArray> in SKList) {

@@ -73,7 +73,6 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setupStatusIcons()
-        DP3THelper.updateContactsFromDatabase()
     }
 
     private fun setupStatusIcons() {
@@ -85,7 +84,7 @@ class HomeFragment : Fragment() {
             view?.findViewById<ImageView>(R.id.encounters_card_status_icon)?.setImageResource(R.drawable.ic_check)
             DP3THelper.database.getHandshakes { response: List<Handshake> ->
                 view?.findViewById<TextView>(R.id.encounters_card_status_text)?.text =
-                    getString(R.string.home_encounters_subtext_check, response.size , DP3THelper.contacts.value?.size ?: 0)
+                    getString(R.string.home_encounters_subtext_check, response.size , DP3THelper.database.contacts.size ?: 0)
             }
         } else {
             view?.findViewById<ImageView>(R.id.encounters_card_status_icon)?.setImageResource(R.drawable.ic_warning)
