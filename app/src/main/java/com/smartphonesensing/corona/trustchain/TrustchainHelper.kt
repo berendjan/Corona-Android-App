@@ -8,7 +8,10 @@ import androidx.preference.PreferenceManager
 import com.smartphonesensing.corona.trustchain.CoronaPayload
 import com.smartphonesensing.corona.trustchain.MyMessage
 import com.smartphonesensing.corona.trustchain.peers.PeerListItem
+import com.smartphonesensing.corona.util.DP3THelper
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -78,6 +81,20 @@ class TrustChainHelper(
                 val peer = getPeerByPublicKeyBin(healthOfficial.hexToBytes())
                 peer?.let {
                     crawlChain(peer)
+                    val healthOffcialChain: List<TrustChainBlock> = getChainByUser(healthOfficial.hexToBytes())
+                    for (block in healthOffcialChain) {
+
+                        if (block.isAgreement && block.publicKey.toHex() == healthOfficial) {
+                            val mainScope = CoroutineScope(Dispatchers.Main)
+                            val stringSKList: ArrayList<Map<String, String>> =
+                                block.transaction["SKList"] as ArrayList<Map<String, String>>
+                            val SKList: SKList = stringSKListToSKList(stringSKList)
+
+                            mainScope.launch {
+                                DP3THelper.checkContactsForSKList(SKList)
+                            }
+                        }
+                    }
                 }
             }
         }

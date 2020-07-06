@@ -219,11 +219,13 @@ object DP3THelper {
             _diagnosedContacts.value = newDiagnosedContacts
         }
 
+        createNewContactNotifaction(context)
+
     }
 
     private fun createNewContactNotifaction(
-        context: Context,
-        contactId: Int
+        context: Context//,
+//        contactId: Int
     ) {
         val secureStorage: SecureStorage = SecureStorage.getInstance(context)!!
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -250,7 +252,7 @@ object DP3THelper {
         notificationManager.notify(NotificationUtil.NOTIFICATION_ID_CONTACT, notification)
         secureStorage.isHotlineCallPending = true
         secureStorage.isReportsHeaderAnimationPending = true
-        secureStorage.lastShownContactId = contactId
+//        secureStorage.lastShownContactId = contactId
     }
 
 }
