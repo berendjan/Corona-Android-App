@@ -140,14 +140,15 @@ object DP3THelper {
                     contactCounter,
                     0
                 )
+                if (means.first != null)
                 contactItems.add(ContactItem(
                     contact,
                     startTime,
                     endTime,
                     handshakeList,
-                    means.second!!,
-                    means.third!!,
-                    means.first!!)
+                    means.second ?: 0.0,
+                    means.third ?: 0.0,
+                    means.first ?: 0.0)
                 )
             }
         }

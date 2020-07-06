@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.smartphonesensing.corona.trustchain.CoronaPayload
 import com.smartphonesensing.corona.trustchain.MyMessage
+import com.smartphonesensing.corona.trustchain.peers.PeerListItem
 import nl.tudelft.ipv8.Peer
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainBlock
 import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
@@ -22,6 +23,19 @@ import org.dpppt.android.sdk.internal.util.DayDate
 class TrustChainHelper(
     private val trustChainCommunity: TrustChainCommunity
 ) {
+
+    private val _updateBlocks = MutableLiveData<Boolean>()
+    val updateBlocks: LiveData<Boolean>
+        get() = _updateBlocks
+
+    fun updateBlocks() {
+        _updateBlocks.value = true
+    }
+
+    fun doneUpdatingBlocks() {
+        _updateBlocks.value = false
+    }
+
     /**
      * Returns a list of users and their chain lengths.
      */
@@ -113,6 +127,10 @@ class TrustChainHelper(
 
     fun getBlocksByType(type: String): List<TrustChainBlock> {
         return trustChainCommunity.database.getBlocksWithType(type)
+    }
+
+    fun getMyChain() : List<TrustChainBlock> {
+        return getChainByUser(trustChainCommunity.myPeer.publicKey.keyToBin())
     }
 
     /**

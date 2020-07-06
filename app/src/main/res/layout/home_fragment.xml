@@ -78,6 +78,19 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/spacing_medium_large" />
 
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/CoronaAppTheme.Card">
+
+                        <Button
+                            android:id="@+id/diagnosed_request"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Send I\'m diagnosed request to health official"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
                     <!--                    <include-->
                     <!--                        layout="@layout/card_contacts"-->
                     <!--                        android:layout_width="match_parent"-->

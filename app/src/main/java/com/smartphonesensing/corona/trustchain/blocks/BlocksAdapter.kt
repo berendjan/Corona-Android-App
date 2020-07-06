@@ -1,20 +1,16 @@
 package com.smartphonesensing.corona.trustchain.blocks
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.smartphonesensing.corona.databinding.TrustchainBlocksListItemBinding
-import com.smartphonesensing.corona.trustchain.peers.PeerListItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 class BlocksAdapter(
     val clickListener: BlockListener) :
     ListAdapter<BlockItem, RecyclerView.ViewHolder>(ItemDiffCallback()) {
-
-    private val adapterScope = CoroutineScope(Dispatchers.Default)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return ViewHolder.from(parent)
@@ -30,6 +26,11 @@ class BlocksAdapter(
         fun bind(block: BlockItem, clickListener: BlockListener) {
             binding.block = block
             binding.clickListener = clickListener
+            if (block.signable) {
+                binding.blockSignButton.visibility = View.VISIBLE
+            } else {
+                binding.blockSignButton.visibility = View.INVISIBLE
+            }
         }
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
@@ -45,13 +46,15 @@ class BlocksAdapter(
 class ItemDiffCallback : DiffUtil.ItemCallback<BlockItem>() {
 
     override fun areItemsTheSame(oldItem: BlockItem, newItem: BlockItem): Boolean {
-        return oldItem.proposalBlock?.blockId == newItem.proposalBlock?.blockId &&
-                oldItem.agreementBlock?.blockId == newItem.agreementBlock?.blockId
+        return oldItem.proposalBlock.blockId == newItem.proposalBlock.blockId &&
+                oldItem.signable == newItem.signable &&
+                oldItem.blockStatus == newItem.blockStatus
     }
 
     override fun areContentsTheSame(oldItem: BlockItem, newItem: BlockItem): Boolean {
-        return oldItem.proposalBlock?.transaction == newItem.proposalBlock?.transaction &&
-                oldItem.agreementBlock?.transaction == newItem.agreementBlock?.transaction
+        return oldItem.proposalBlock.blockId == newItem.proposalBlock.blockId &&
+                oldItem.signable == newItem.signable &&
+                oldItem.blockStatus == newItem.blockStatus
     }
 }
 

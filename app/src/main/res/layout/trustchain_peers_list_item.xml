@@ -47,7 +47,7 @@
             app:layout_constraintStart_toEndOf="@id/encounters_list_item_image"
             app:layout_constraintEnd_toStartOf="@id/encounters_list_item_chevron"
             style="@style/CoronaAppTheme.Text"
-            android:text="@{peer.peer.mid}"
+            android:text="@{peer.text}"
             android:layout_marginEnd="@dimen/marging_status_error"
             android:layout_marginStart="@dimen/marging_status_error"
             android:layout_marginTop="@dimen/marging_status_error"/>
@@ -61,7 +61,7 @@
             app:layout_constraintEnd_toStartOf="@id/encounters_list_item_chevron"
             app:layout_constraintBottom_toBottomOf="parent"
             style="@style/CoronaAppTheme.Text"
-            android:text="@{peer.peer.mid}"
+            android:text="@{peer.toPeerString}"
             android:layout_marginEnd="@dimen/marging_status_error"
             android:layout_marginStart="@dimen/marging_status_error"
             android:layout_marginTop="@dimen/marging_status_error"

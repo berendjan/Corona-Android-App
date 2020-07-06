@@ -87,7 +87,7 @@ class PeersFragment : Fragment() {
 //                val items =
 
                 viewModel.updatePeerList(peers)
-                delay(3000)
+                delay(1000)
             }
         }
     }

@@ -41,6 +41,7 @@ class PeersViewModel : ViewModel() {
 }
 
 class PeerListItem(val peer: Peer) {
+    val text = peer.address.ip
     val toPeerString = "To peer:\n" + peer.mid
 }
 

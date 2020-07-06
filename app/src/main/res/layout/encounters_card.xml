@@ -37,6 +37,7 @@
             android:scaleY="2"
             android:src="@drawable/ic_chevron_right"
             android:tint="@color/dark_main"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/encounters_card_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/encounters_card_title" />

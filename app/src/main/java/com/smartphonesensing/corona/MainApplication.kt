@@ -74,10 +74,15 @@ class MainApplication : Application() {
     }
 
     private fun setupRecurringWork() {
+//        val createContactsWorkRequest =
+//            PeriodicWorkRequestBuilder<ContactsCreationWorker>(
+//                CryptoModule.MILLISECONDS_PER_EPOCH.toLong(), TimeUnit.MILLISECONDS,
+//                5, TimeUnit.MINUTES)
+//                .addTag(ContactsCreationWorker.WORK_NAME)
+//                .build()
         val createContactsWorkRequest =
             PeriodicWorkRequestBuilder<ContactsCreationWorker>(
-                CryptoModule.MILLISECONDS_PER_EPOCH.toLong(), TimeUnit.MILLISECONDS,
-                5, TimeUnit.MINUTES)
+                1, TimeUnit.MINUTES)
                 .addTag(ContactsCreationWorker.WORK_NAME)
                 .build()
 
@@ -195,8 +200,7 @@ class MainApplication : Application() {
         trustchain.registerBlockSigner(CORONA_BLOCK_TYPE, object : BlockSigner {
             override fun onSignatureRequest(block: TrustChainBlock) {
                 Log.d("CoronaChain", "Create agreement block for incoming block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
-//                val tx = mapOf<Any?, Any?>("messageKey2" to "messageValue2")
-                trustchain.createAgreementBlock(block, block.transaction)
+//                trustchain.createAgreementBlock(block, block.transaction)
             }
         })
 
@@ -218,10 +222,17 @@ class MainApplication : Application() {
             override fun onBlockReceived(block: TrustChainBlock) {
                 Log.d("CoronaChain", "listener called for action on block: ${block.blockId} \n previousblock: ${block.previousHash}\n is proposal ${block.isProposal} \n isAgreement: ${block.isAgreement} \n is Genesis: ${block.isGenesis}")
 
-                if (block.isAgreement) {
-                    val stringSKList = block.transaction["SKList"] as ArrayList<Map<String, String>>
-                    val SKList: SKList = trustChainHelper.stringSKListToSKList(stringSKList)
-                    DP3THelper.checkContactsForSKList(SKList)
+                trustChainHelper.updateBlocks()
+
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                val healthOfficial = sharedPreferences.getString("pref_ipv8_health_official", null)
+                if (healthOfficial != null) {
+                    if (block.isAgreement && healthOfficial == block.publicKey.toHex()) {
+                        val stringSKList: ArrayList<Map<String, String>> =
+                            block.transaction["SKList"] as ArrayList<Map<String, String>>
+                        val SKList: SKList = trustChainHelper.stringSKListToSKList(stringSKList)
+                        DP3THelper.checkContactsForSKList(SKList)
+                    }
                 }
             }
         })

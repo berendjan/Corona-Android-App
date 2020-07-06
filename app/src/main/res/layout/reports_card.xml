@@ -32,6 +32,7 @@
             android:layout_marginEnd="16dp"
             android:scaleX="2"
             android:scaleY="2"
+            android:visibility="invisible"
             android:src="@drawable/ic_chevron_right"
             android:tint="@color/dark_main"
             app:layout_constraintBottom_toBottomOf="@+id/reports_card_title"

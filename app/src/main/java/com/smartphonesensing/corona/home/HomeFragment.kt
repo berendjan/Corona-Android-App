@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -14,6 +15,9 @@ import com.smartphonesensing.corona.R
 import com.smartphonesensing.corona.databinding.HomeFragmentBinding
 import com.smartphonesensing.corona.util.DP3THelper
 import nl.tudelft.ipv8.android.IPv8Android
+import nl.tudelft.ipv8.attestation.trustchain.TrustChainCommunity
+import nl.tudelft.ipv8.util.hexToBytes
+import nl.tudelft.ipv8.util.toHex
 import nl.tudelft.trustchain.common.util.TrustChainHelper
 import org.dpppt.android.sdk.internal.database.models.Handshake
 
@@ -37,11 +41,31 @@ class HomeFragment : Fragment() {
 
         setHeaderOpacityWithScroll()
 
+        val trustChainHelper = TrustChainHelper(IPv8Android.getInstance().getOverlay()!!)
 
         /** set LifeCycleOwner of binding to this fragment
          * can directly home_fragment.xml to viewModel LiveData object
          */
         binding.lifecycleOwner = this
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        binding.diagnosedRequest.setOnClickListener {
+
+            val healthOfficial = sharedPreferences.getString("pref_ipv8_health_official", null)
+
+            when (healthOfficial) {
+                null -> Toast.makeText(context, "Please provide the health official validation peer in settings!", Toast.LENGTH_LONG).show()
+                trustChainHelper.getMyPublicKey().toHex() -> run {
+                    Toast.makeText(context, "You are the health official and can only validate others", Toast.LENGTH_LONG).show()
+                }
+                else -> run {
+                    val secretKeyList = DP3THelper.getSKList()
+                    trustChainHelper.createCoronaProposalBlock(secretKeyList,
+                        healthOfficial.hexToBytes())
+                }
+            }
+        }
 
         return binding.root
     }

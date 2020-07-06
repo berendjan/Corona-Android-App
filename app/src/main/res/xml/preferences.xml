@@ -32,7 +32,7 @@
 
         <SeekBarPreference
             app:key="pref_dp3t_att"
-            app:summary="Maximum attenuation level for contacts for exposure risk"
+            app:summary="Minimum attenuation level for safe distancing"
             app:title="Attenuation level"
             android:max="150"
             app:min="50"
@@ -51,6 +51,12 @@
             app:summary="Send and receive diagnosed keys via P2P network"
             app:title="Enable P2P network"
             app:defaultValue="true"/>
+
+        <ListPreference
+            app:key="pref_ipv8_health_official"
+            app:summary="Set a health official who can validate diagnoses"
+            app:title="Choose health official"
+            app:defaultValue="self" />
 
     </PreferenceCategory>
 

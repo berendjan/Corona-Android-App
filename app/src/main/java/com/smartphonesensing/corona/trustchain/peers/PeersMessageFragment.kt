@@ -60,10 +60,6 @@ class PeersMessageFragment : Fragment() {
 
         binding.messageSendButton.setOnClickListener { _ ->
 
-            val secretKeyList = DP3THelper.getSKList()
-
-            trustChainHelper.createCoronaProposalBlock(secretKeyList,
-                viewModel.selectedPeer.value!!.peer.publicKey.keyToBin())
 
 //            trustChainHelper.sendSKListToPeer(
 //                viewModel.selectedPeer.value!!.peer,
