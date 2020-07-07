@@ -217,9 +217,8 @@ object DP3THelper {
 
         if (newDiagnosedContacts.size > 0) {
             _diagnosedContacts.value = newDiagnosedContacts
+            createNewContactNotifaction(context)
         }
-
-        createNewContactNotifaction(context)
 
     }
 

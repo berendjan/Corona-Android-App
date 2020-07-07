@@ -56,10 +56,10 @@ Thank you for helping to contain the spread of the coronavirus."</string>
     <string name="cancel">"Cancel"</string>
 
     <!-- Titel für Push-Nachrichten, wenn erkannt wird, dass ein Nutzer exposed war -->
-    <string name="push_exposed_title">"New message"</string>
+    <string name="push_exposed_title">"Possible exposure"</string>
 
     <!-- Titel für Push-Nachrichten, wenn erkannt wird, dass ein Nutzer exposed war -->
-    <string name="push_exposed_text">"Open the app to read the message"</string>
+    <string name="push_exposed_text">"Open the Corona app reports to see more information"</string>
 
     <!-- Titel für Button um Ortung zu erlauben -->
     <string name="android_button_permission_location">"Permit localisation"</string>
